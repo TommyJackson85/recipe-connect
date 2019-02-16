@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block header %}
+    {% if user_id == 'no_user' %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+    {% else %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+    {% endif %}
+{% endblock header %}
+{% block content %}
+<div class="row">
+    <form id="form"class="col s12 l10 push-l1" method="POST" action="{{ url_for('search_recipes', user_id=user_id, form_requested=True) }}">
+        
+        <h5 class="welcome_header col s12 l10 push-l1">Search recipes here!</h5>
+        <div class="row">
+            <div class="input-field col s12 m4">
+              <input id="recipe_cuisine" type="text" class="recipe_cuisine" name="recipe_cuisine" value="{{ searchbase.cuisine }}">
+              <label for="recipe_cuisine">Cuisine</label></label>
+            </div>
+            <div class="input-field col s12 m4">
+              <input id="recipe_ingredient" type="text" class="recipe_ingredient" name="recipe_ingredient" value="{{ searchbase.ingredient }}">
+              <label for="recipe_ingredient">Ingredient</label></label>
+            </div>
+            <div class="input-field col s12 m4">
+              <input id="recipe_allergen" type="text" class="recipe_allergen" name="recipe_allergen" value="{{ searchbase.allergen }}">
+              <label for="recipe_allergen">Allergen</label></label>
+            </div>
+            <button id="search_recipes" class="search_recipes btn waves-effect waves-light col s6 push-s3 l4 push-l4" type="submit" value="new" name="action">
+                Search Recipes
+            </button>
+        </div>
+    </form>
+</div>
+<div class="row">
+<div class="col s12 l10 push-l1 xl8 push-xl2">
+    <ul class="collapsible" data-collapsible="accordion">
+    {% if recipes_found %}
+        {% for recipe in recipes %}
+        <li>       
+            <div class="collapsible-header">
+                <i class="material-icons">expand_more</i>
+                <div class="row">
+                    <div class="col s12 m8">
+                        <h5>{{ recipe.recipe_name }} </h5>
+                        <h6>Cuisine: {{ recipe.recipe_cuisine }} - Last Updated: {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }} 
+                        (
+                        {% if recipe.last_modified.hour < 10 %}
+                            0{{ recipe.last_modified.hour }}
+                        {% else %}
+                            {{ recipe.last_modified.hour }}
+                        {% endif %}
+                        :
+                        {% if recipe.last_modified.minute < 10 %}
+                            0{{ recipe.last_modified.minute }}
+                        {% else %}
+                            {{ recipe.last_modified.minute }}
+                        {% endif %}
+                        )
+                        </h6>
+                        <h6>Upvotes: <em class="green_text">{{ recipe.recipe_upvotes }}</em> | Views: <em class="green_text">{{ recipe.recipe_views }}</em></h6>
+                    </div>
+                    <div class="col s12 m4">
+                        {% if user_id == recipe.user_id  %}
+                            <h6>Created by You! Well done!</h6>
+                        {% else %}
+                            <h6><strong>Created by: </strong> <em class="green_text">{{recipe.user_details.name}}</em>
+                            </h6><h6><strong>From: </strong><em class="green_text">{{recipe.user_details.country}}</em></h6>
+                        {% endif %}
+                        <a href="{{ url_for('recipe', recipe_id=recipe._id, user_id=user_id, upvoting=False ) }}" class="view_recipe waves-effect wavers-light btn btn_medium">View Recipe</a>
+                    </div>
+                        
+                    <div class="col s12 m6">
+                        {% if recipe.recipe_ingredients|length > 0 %}
+                            <p><strong>Ingredients:</strong></p>
+                        {% endif %}
+                        {% for ingredient in recipe.recipe_ingredients %}
+                        <div class="expandable_box ingredient_parent">
+                            <h6 class="ingredient_item">
+                                <strong>{{ ingredient.ingredient }}</strong>
+                            </h6>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col s12 m6">
+                    {% if recipe.recipe_allergen_summary|length > 0 %}
+                    <p><strong>Allergens:</strong></p>
+                    {% endif %}
+                    {% for allergen in recipe.recipe_allergen_summary %}
+                    <div class="expandable_box allergen_parent">
+                        <h6 class="ingredient_item">
+                            <strong>{{ allergen }}</strong>
+                        </h6>
+                    </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="collapsible-body">
+                <span>
+                    <p class=""><strong>Description:</strong> {{ recipe.recipe_description }}</p>
+                </span>
+            </div>
+        </li>
+        {% endfor %}
+    {% else %}
+    <li>
+        <div class='regular_box_item'>
+            <div class="recipe_header">
+                <h6>No recipes found! Please try another search above!</h6>
+                
+            </div>
+        </div>
+    </li>
+    {% endif %}
+    </ul>
+</div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

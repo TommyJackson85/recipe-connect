@@ -80,20 +80,25 @@ nav, .page-footer, .footer-copyright {
     color: black;
     border-radius: 5px;
 }
+.allergen_parent {
+    background: #FF6161;
+    color: black;
+    border-radius: 5px;
+}
 
 .instruction_editing_section{
     background-color: #88E000;/*yellow*/
 }
-.save_recipe {
+.save_recipe, .view_recipe, .upvote_recipe {
     background: #05A605;
 }
-.save_recipe:hover {
+.save_recipe:hover, .view_recipe:hover, .upvote_recipe:hover {
     background: #3FD03F;
 }
-.submit_login, .submit_register, .ingredient_add_button a, .instruction_add_button a, .save_instruction_edit a {
+.submit_login, .submit_register, .ingredient_add_button a, .instruction_add_button a, .save_instruction_edit a, .search_recipes {
     background-color: #009898;
 }
-.submit_login:hover, .submit_register:hover, .ingredient_add_button a:hover, .instruction_add_button a:hover, .save_instruction_edit a:hover {
+.submit_login:hover, .submit_register:hover, .ingredient_add_button a:hover, .instruction_add_button a:hover, .save_instruction_edit a:hover, .search_recipes:hover {
     background-color: #35C0C0;
 }
 /*margins, paddings, other measurements*/
@@ -149,7 +154,13 @@ main {
 /*.list-builder-button {
     margin-top: 20px;
 }*/
+/*User Recipes*/
 
+.edit_recipe, .delete_recipe {
+    margin: 10px 15px 5px 0px;
+}
+
+/*Edit and Create forms*/
 .ingredient_add_button, .instruction_add_button, .save_instruction_edit {
     margin: 5px 0px 20px 0px;
 }
@@ -162,13 +173,13 @@ main {
     margin: 5px 0px;
 }
 
-.ingredient_parent {
+.ingredient_parent, .allergen_parent {
     overflow:auto;
     display:inline-block;
     margin:5px 5px 5px 5px;
     padding: 5px 5px 5px 5px;
 }
-.ingredient_parent h6 {
+.ingredient_parent h6, .allergen_parent h6 {
     display:inline-block;
 }
 

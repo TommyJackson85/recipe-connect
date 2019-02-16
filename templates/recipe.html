@@ -1,19 +1,87 @@
-{% block header  %}
-<ul id="nav-mobile" class="right hide-on-med-and-down">
-    {% if logged_in == True %}
-    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
-    <li><a href="{{url_for('add_recipe')}}">Add Recipe</a></li>
-    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+{% extends 'base.html' %}
+{% block header %}
+    {% if user_id == 'no_user' %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
     {% else %}
-    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
     {% endif %}
-</ul>
-<ul class="side-nav" id="mobile-demo">
-    {% if logged_in %}
-    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
-    <li><a href="{{url_for('add_recipe')}}">Add Recipe</a></li>
-    {% else %}
-    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
-    {% endif %}
-</ul>
 {% endblock header %}
+{% block content %}
+<div class="row">
+    <div class="col s12 l10 push-l1 xl8 push-xl2">
+        <h3 class="welcome_header red_text">{{ recipe.recipe_name}}</h3>
+    </div>
+    <div class="col s12 m5 push-m1">
+        <h5><strong>Cuisine:</strong> {{ recipe.recipe_cuisine }}</h5> 
+        <h5><strong>Last Updated:</strong> {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }} ( {{ recipe.last_modified.hour }}:{{ recipe.last_modified.minute }} )</h5>
+        <h5><strong>Views:</strong> <em class="green_text">{{ recipe.recipe_views }}</em></h5>
+        <h5><strong>Upvotes:</strong> <em class="green_text">{{ recipe.recipe_upvotes }}</em></h5>
+        {% if user_id != 'no_user'%}
+            {% if recipe_id in user.upvoted_recipes  %}
+                <h5><em class="green_text">You have upvoted this recipe!</em></h5>
+            {% else %}
+            <a href="{{ url_for('recipe', recipe_id=recipe._id, user_id=user_id, upvoting=True ) }}" class="btn waves-effect waves-light upvote_recipe" type="submit" name="action">
+                Upvote Recipe
+                <i class="material-icons right">add</i>
+            </a>
+            {% endif %}
+        {% endif %}
+    </div>
+     <div class="col s12 m5 push-m1">
+         <h5><strong>Description:</strong></h5>
+         <p>{{ recipe.recipe_description }}</p> 
+     </div>
+    <div class="col s10 push-s1">
+        <h5><strong>Ingredients Required:</strong></h5>
+        {% for ingredient in recipe.recipe_ingredients %}
+            <div class="expandable_box ingredient_parent">
+            <h6 class="ingredient_item">
+                <strong>{{ingredient.ingredient}}</strong>( {{ingredient.amount}} )
+                {% if ingredient.allergens|length > 0 %}
+                    - <em>Allergens:
+                    {% for allergen in ingredient.allergens %}
+                        {% if loop.index == ingredient.allergens|length %}
+                            {{allergen}}
+                        {% else %}
+                            {{allergen}}, 
+                        {% endif %}
+                    {% endfor %}
+                    </em>
+                {% endif %}
+            </h6>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col s10 push-s1">
+        <h5><strong>List of instructions:</strong></h5>
+        <ol>
+            {% for instruction in recipe.recipe_instructions %}
+                <li>{{instruction}}</li>
+            {% endfor %}   
+        </ol>
+    </div>
+    <div class="col s12">li>
+        <a href="{{ url_for('search_recipes', user_id=user_id, form_requested=False) }}" class="btn waves-effect waves-light search_recipes col s10 push-s1 m6 push-m3 l4 push-l4" type="submit" name="action">
+            Return To Search Recipes
+        </a>
+    </div>
+</div>
+{% endblock content %}

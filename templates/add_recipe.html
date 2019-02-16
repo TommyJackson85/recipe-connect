@@ -1,11 +1,13 @@
 {% extends 'base.html' %} 
 {% block header %}
 <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
@@ -15,7 +17,7 @@
 {% block content %}
 <h5 class="welcome_header">Welcome <i class="green_text">{{ user.user_name }}</i> ~ Create a new recipe here:</h5>
 <div class="row">
-    <form id="form" class="col s12" method="POST" action="{{ url_for('insert_recipe', user_id=user_id) }}">
+    <form id="form" class="col s12" method="POST" action="{{ url_for('insert_recipe', user_id=user_id, user=user) }}">
         <h6 class="red_text col s12 l10 push-l1">* ~ <i>Input required</i></h6>
         <div class="row">
             <div class="input-field col s12 l5 push-l1">

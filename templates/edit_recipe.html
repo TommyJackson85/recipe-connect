@@ -1,11 +1,13 @@
 {% extends 'base.html' %} 
 {% block header %}
 <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
@@ -14,20 +16,20 @@
 
 {% block content %}
 <h5 class="welcome_header">Welcome <i class="green_text">{{ user.user_name }}</i> ~ Edit your recipe here:</h5>
-<h6 class="red_text">* ~ <i>Input required</i></h6>
 <div class="row">
     <form id="form" class="col s12" method="POST" action="{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}">
+        <h6 class="red_text col s12 l10 push-l1">* ~ <i>Input required</i></h6>
         <div class="row">
             <div class="input-field col s12 l5 push-l1">
-                <input id="recipe_name" name="recipe_name" type="text">
+                <input id="recipe_name" name="recipe_name" type="text" value="{{ recipe_name }}">
                 <label for="icon_prefix">Name *</label>
             </div>
             <div class="input-field col s12 l5 push-l1">
-                <input id="recipe_cuisine" name="recipe_cuisine" type="text">
+                <input id="recipe_cuisine" name="recipe_cuisine" type="text" value="{{ recipe_cuisine }}">
                 <label for="icon_prefix">Cuisine *</label>
             </div>
             <div class="input-field col s12 l10 push-l1">
-                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text"></textarea>
+                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text">{{ recipe_description }}</textarea>
                 <label for="icon_telephone">Description</label>
             </div>
             <div id="array_inputs" class="input-field col s12 hidden">
@@ -35,7 +37,6 @@
         </div>
         <div class="row">
             <div class="ingredient_list_builder col s12 m10 push-m1">
-            
             <h5>Ingredients adder</h5>
             <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
             
@@ -100,7 +101,7 @@
         <div class="row">
             <button id="save_recipe" class="save_recipe btn waves-effect waves-light col s10 push-s1 m8 push-m2 l6 push-l3" type="submit" value="new" name="action">
                 <i class="material-icons right">send</i>
-                Submit New Recipe
+                Submit Recipe Edit
             </button>
         </div>
     </form>
@@ -121,7 +122,7 @@
             //receives current ingredients and instructions data from Python
             
             ingredients = JSON.parse({{ ingredients|tojson|safe }});
-            allergen_summary = [];
+            allergen_summary = [];//starts on a clean slate
             instructions = JSON.parse({{ instructions|tojson|safe }});
             for (var i=0; i<ingredients.length; i++) {
                 addIngredient(ingredients[i], i);

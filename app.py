@@ -1,7 +1,8 @@
-import os, json, ast
+import os, json, ast, datetime
 from flask import Flask, render_template, redirect, request, url_for, jsonify
 
 from bson import json_util
+from bson.son import SON
 from bson.objectid import ObjectId
 from flask_pymongo import PyMongo
 import sys
@@ -9,8 +10,8 @@ print(sys.path)
 
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
-#app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
-app.config["MONGO_URI"] = 'mongodb://bigtom98:funnybone98@ds131997.mlab.com:31997/recipe-manager'
+app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
+
 
 mongo = PyMongo(app)   
 
@@ -150,28 +151,37 @@ def user_recipes(user_id):
 def add_recipe(user_id):
     return render_template("add_recipe.html", 
                             user_id=user_id,
-                            user=mongo.db.users.find_one({  "_id": ObjectId(user_id)    }),
+                            user = mongo.db.users.find_one({  "_id": ObjectId(user_id)    }),
                             recipes=mongo.db.recipes.find())
 
 @app.route('/insert_recipe/<user_id>', methods=['POST', 'GET'])
 def insert_recipe(user_id):
     if request.method == 'POST':
-        #new_data = request.get_json()
         new_data= request.form.to_dict()
-
+        user = mongo.db.users.find_one({  "_id": ObjectId(user_id)    })
+        user_name = user["user_name"]
+        user_country = user["user_country"]
         recipe_ingredients = json.loads(new_data['recipe_ingredients'])
         recipe_instructions = json.loads(new_data['recipe_instructions'])
+        recipe_allergen_summary = json.loads(new_data['recipe_allergen_summary'])
+        dt = datetime.datetime.now()
         
         recipe_id = mongo.db.recipes.insert(
         {       
                 "user_id": ObjectId(user_id),
+                "user_details": {
+                    "name": user["user_name"],
+                    "country": user["user_country"]
+                },
                 "recipe_name":new_data["recipe_name"],
                 "recipe_cuisine":new_data["recipe_cuisine"],
                 "recipe_description":new_data["recipe_description"],
                 "recipe_ingredients":recipe_ingredients,
+                "recipe_allergen_summary":recipe_allergen_summary,
                 "recipe_instructions":recipe_instructions,
                 "recipe_views":0,
-                "recipe_upvotes":0
+                "recipe_upvotes":0,
+                "last_modified": dt
         })
         print(recipe_id)
         mongo.db.users.update({'_id': ObjectId(user_id)}, 
@@ -205,14 +215,17 @@ def update_recipe(user_id, recipe_id):
     edited_data = request.form.to_dict()
     recipe_instructions = json.loads(edited_data["recipe_instructions"])
     recipe_ingredients = json.loads(edited_data["recipe_ingredients"])
-    recipes.update( {'_id': ObjectId(recipe_id)}, 
+    recipe_allergen_summary = json.loads(edited_data["recipe_allergen_summary"])
+    recipes.update( {'_id': ObjectId(recipe_id)},
         {   "$set":
                 {
                     "recipe_name":edited_data["recipe_name"],
                     "recipe_cuisine":edited_data["recipe_cuisine"],
                     "recipe_description":edited_data["recipe_description"],
                     "recipe_ingredients":recipe_ingredients,
-                    "recipe_instructions":recipe_instructions
+                    "recipe_allergen_summary":recipe_allergen_summary,
+                    "recipe_instructions":recipe_instructions,
+                    "last_modified": datetime.datetime.now()
                 }
         })
     return redirect(url_for('user_recipes',
@@ -221,16 +234,108 @@ def update_recipe(user_id, recipe_id):
 @app.route('/delete_recipe/<user_id>/<recipe_id>', methods=['GET'])
 def delete_recipe(user_id, recipe_id):
     mongo.db.recipes.remove({'_id': ObjectId(recipe_id)})
+    #pulls deleted recipe id from recipe creator's recipe_ids
     mongo.db.users.update({'_id': ObjectId(user_id)},
     { '$pull': { 'recipe_ids': ObjectId(recipe_id) } })
+    
+    #pulls deleted recipe id from users upvoted recipes, if they upvoted it recipe_ids
+    mongo.db.users.update({'upvoted_recipes': ObjectId(user_id)},
+    { '$pull': { 'upvoted_recipes': ObjectId(recipe_id) } })
+    
     return redirect(url_for('user_recipes',
                             user_id=user_id))
+"""                            
+@app.route('/all_recipes/<user_id>/<recipes_found>/<query_object>', methods=['POST', 'GET'])
+def all_recipes(user_id, recipes_found, query_object):
+    #searchbase = mongo.db.logbase.find_one({"data_type": "search"})
+    recipes=mongo.db.recipes.find(query_object).sort([("recipe_upvotes", 1), ("recipe_views", 1), ("last_modified", -1)] ).limit(4)
+    print(query_object)
+    return render_template("all_recipes.html",
+                            user_id=user_id,
+                            recipes=recipes,
+                            recipes_found=recipes_found)
+"""
 
-
-@app.route('/search_recipes')
+@app.route('/search_recipes/<user_id>/<form_requested>', methods=['POST', 'GET'])
 # shows all recipes and user can search, view and rate recipes
-def search_recipe():
-    return render_template("search_recipes.html", 
-                            recipes=mongo.db.recipes.find()) 
+def search_recipes(user_id, form_requested):
+    recipes_found = False #initial setting
+    query_object = {}
+    if form_requested == 'True':
+        new_search = request.form.to_dict()
+        print(new_search)
+        if len(new_search["recipe_cuisine"]) > 0:
+            query_object["recipe_cuisine"] = new_search["recipe_cuisine"]
+        if len(new_search["recipe_ingredient"]) > 0:
+            query_object["recipe_ingredients.ingredient"] = new_search["recipe_ingredient"]
+        if len(new_search["recipe_allergen"]) > 0:      
+            query_object["recipe_allergen_summary"] = { "$ne": new_search["recipe_allergen"]  }
+            
+        mongo.db.searchbase.update({"data_type": "search"}, { 
+            "$set": {
+                "cuisine":  new_search["recipe_cuisine"],
+                "ingredient": new_search["recipe_ingredient"],
+                "allergen": new_search["recipe_allergen"]           
+            }
+        })
+    else:
+        searchbase = mongo.db.searchbase.find_one({"data_type": "search"})
+        if len(searchbase["cuisine"]) > 0:
+            query_object["recipe_cuisine"] = searchbase["cuisine"]
+        if len(searchbase["ingredient"]) > 0:
+            query_object["recipe_ingredients.ingredient"] = searchbase["ingredient"]
+            { "ingredient": searchbase["ingredient"] }
+        if len(searchbase["allergen"]) > 0:
+            query_object["recipe_allergen_summary"] = { "$ne": searchbase["allergen"]  }
+    
+    print(query_object)   
+    if mongo.db.recipes.find(query_object).count() > 0:
+        print(mongo.db.recipes.find(query_object).limit(20).count())
+        print(query_object)  
+        recipes_found = True
+        recipes=mongo.db.recipes.find(query_object).sort([("recipe_upvotes", -1), ("recipe_views", -1), ("last_modified", -1)] ).limit(20)
+        return render_template("search_recipes.html",
+                                user_id=user_id,
+                                recipes_found=recipes_found,
+                                searchbase = mongo.db.searchbase.find_one({"data_type": "search"}),
+                                recipes=recipes)
+    else:
+        recipes_found = False
+        return render_template("search_recipes.html",
+                                user_id=user_id,
+                                recipes_found=recipes_found,
+                                searchbase = mongo.db.searchbase.find_one({"data_type": "search"}))
+
+@app.route('/recipe/<recipe_id>/<user_id>/<upvoting>', methods=['POST', 'GET'])                                
+def recipe(recipe_id, user_id, upvoting):
+    if upvoting == 'True':
+        #when user decides to upvote a recipe (from the individual recipe page) it reloads the page
+        mongo.db.users.update({'_id': ObjectId(user_id)}, 
+                { '$push': { 'upvoted_recipes': recipe_id } }
+        )
+        mongo.db.recipes.update({'_id': ObjectId(recipe_id)},
+                { "$inc": { "recipe_upvotes": 1 }   }        
+        )
+    else:
+        #when a user opens a recipe page after searching on the search page
+        mongo.db.recipes.update({'_id': ObjectId(recipe_id)},
+                { "$inc": { "recipe_views": 1 }   }        
+        )
+    if user_id == 'no_user':
+        return render_template("recipe.html",
+                                user_id=user_id,
+                                recipe_id=recipe_id,
+                                recipe = mongo.db.recipes.find_one({ "_id": ObjectId(recipe_id) })
+                            )
+    else:
+        return render_template("recipe.html",
+                                user_id=user_id,
+                                recipe_id=recipe_id,
+                                user = mongo.db.users.find_one({ "_id": ObjectId(user_id) }),
+                                recipe = mongo.db.recipes.find_one({ "_id": ObjectId(recipe_id) })
+                            )
+    
+
 if __name__ == '__main__':      
     app.run(host=os.getenv('IP'), port=int(os.getenv('PORT')), debug=True)
+        

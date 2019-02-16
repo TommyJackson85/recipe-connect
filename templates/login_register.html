@@ -2,9 +2,11 @@
 
 {% block header %}
 <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
 </ul>
 {% endblock header %}

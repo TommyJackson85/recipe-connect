@@ -213,6 +213,7 @@
                 addAllergy($('#ingredient_allergy5').val());                    
                 var i = ingredients.length; //gets associated pushed array.                    
                 ingredients.push(newIngObj);
+                console.log(allergen_summary);
                 
                 //emptying ingredient input values
                 $('#ingredient_name').val('');
@@ -275,37 +276,31 @@
                     e.preventDefault();
                     return alert("Recipe Cuisine field empty! Cannot submit without it.");
                 }
+                //array unique code originally from this stackoverflow post: https://stackoverflow.com/questions/1584370/how-to-merge-two-arrays-in-javascript-and-de-duplicate-items
+                function arrayUnique(array) {
+                    var a = array.concat();
+                    for(var i=0; i<a.length; ++i) {
+                        for(var j=i+1; j<a.length; ++j) {
+                            if(a[i] === a[j])
+                                a.splice(j--, 1);
+                        }
+                    }
+                    return a;
+                }
+                for(var i =0; i < ingredients.length; i++){
+                    allergen_summary=arrayUnique(allergen_summary.concat(ingredients[i].allergens));
+                    
+                }
+                console.log(allergen_summary);
+                alert("allergen summary" + allergen_summary.join(', '))
+                
                 var array_inputs = "<input id='recipe_instructions' name='recipe_instructions' type='text' value='" + JSON.stringify(instructions) + "'>" +
                 "<input id='recipe_ingredients' name='recipe_ingredients' type='text' value='" + JSON.stringify(ingredients) + "'>" +
                 "<input id='recipe_allergen_summary' name='recipe_allergen_summary' type='text' value='" + JSON.stringify(allergen_summary) + "'>";
                 $('#array_inputs').html(array_inputs);
                 console.log('done')
-            
                 console.log( $("#recipe_description").val())
-                    /*var recipe_data = {
-                        "recipe_name": $("#recipe_name").val(),
-                        "recipe_cuisine": $("#recipe_cuisine").val(),
-                        "recipe_description": $("#recipe_description").val(),
-                        "recipe_ingredients": ingredients,
-                        "recipe_instructions": instructions,
-                        "recipe_views": 0,
-                        "recipe_upvotes": 0
-                    }
-                    $.ajax({
-                        type: AJAX_method,
-                        contentType: 'application/json',
-                        url: AJAX_url,
-                        dataType : "json",
-                        data: JSON.stringify(recipe_data),
-                        success: function(response) {
-                            console.log(response);
-                        },error : function(error){
-                            console.log(error);
-                        }
-                    });
-                    e.preventDefault();
-                    return true;*/
-                })
+            })
             })
 </script>
 {% block scripts %}
