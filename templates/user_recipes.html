@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block header %}
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+</ul>
+<ul class="side-nav" id="mobile-demo">
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+</ul>
+{% endblock header %}
+
+{% block content %}
+        <h6>Welcome {{ user.user_name }}!</h6>
+        <ul class="collapsible" data-collapsible="accordion">
+            {% for recipe in recipes %}
+            <li>
+                <div class="collapsible-header">
+                    <div class=" recipe_header col s9">
+                        <i class="material-icons">expand_more</i> {{ recipe.recipe_name }} - Cuisine: {{ recipe.recipe_cuisine }} - Created: {{ recipe.recipe_date }}
+                        <a href="{{url_for('edit_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="waves-effect wavers-light btn btn_small">Edit</a>
+                        <a href="{{url_for('delete_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="waves-effect wavers-light btn btn_small">Delete</a>
+                    </div>
+                </div>
+                <div class="collapsible-body">
+                    <span>
+                        <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
+                        {% if recipe.recipe_ingredients|length > 0 %}
+                        <p><strong>Ingredients:</strong></p>
+                        {% endif %}
+                        {% for ingredient in recipe.recipe_ingredients %}
+                        <div class="expandable_box ingredient_parent">
+                            <h6 class="ingredient_item">
+                                <strong>{{ingredient.ingredient}}</strong>( {{ingredient.amount}} )
+                                {% if ingredient.allergens|length > 0 %}
+                                - <em>Allergens:
+                                {% for allergen in ingredient.allergens %}
+                                    {% if loop.index == ingredient.allergens|length %}
+                                    {{allergen}}
+                                    {% else %}
+                                    {{allergen}}, 
+                                    {% endif %}
+                                {% endfor %}
+                                </em>
+                                {% endif %}
+                            </h6>
+                        </div>
+                        {% endfor %}
+                                               
+                        {% if recipe.recipe_instructions|length > 0 %}
+                        <p><strong>Instructions List:</strong></p>
+                        {% endif %}
+                        <ol>
+                        {% for instruction in recipe.recipe_instructions %}
+                            <li>{{instruction}}</li>
+                        {% endfor %}   
+                        </ol>
+                    </span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+{% endblock content %}
+{% block scripts %}
+{% endblock scripts %}

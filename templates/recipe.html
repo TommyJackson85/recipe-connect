@@ -1,0 +1,19 @@
+{% block header  %}
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+    {% if logged_in == True %}
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe')}}">Add Recipe</a></li>
+    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+    {% else %}
+    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
+    {% endif %}
+</ul>
+<ul class="side-nav" id="mobile-demo">
+    {% if logged_in %}
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe')}}">Add Recipe</a></li>
+    {% else %}
+    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
+    {% endif %}
+</ul>
+{% endblock header %}

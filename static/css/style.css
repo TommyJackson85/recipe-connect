@@ -1,0 +1,42 @@
+body{
+    background-color: green;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.btn_small{
+    height:24px;
+    width:60px;
+    line-height:24px;
+    margin:5px 5px;
+    padding:0 0.5em;
+}
+
+.delete-data {
+    color: red;
+}
+
+.ingredient_list_builder {
+    background: yellow;
+}
+.instruction_list_builder{
+    background: orange;
+}
+
+.list-builder-button {
+    margin-top: 20px;
+}
+
+.ingredients, .instructions {
+    width: 100%;
+    padding: 5px 2px;
+    margin: 5px 0px;
+    border-style: solid;
+    border-color: red;
+    border-width: 5px;
+}

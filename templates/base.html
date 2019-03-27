@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" type="text/css" />
+        <meta name="viewport" content="width=device-width">
+        <meta charset="utf-8"/>
+        <title>Recipe Connect +</title>
+    </head>
+    <body>
+    <header>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                <!--header data, depending if page is for logged in users, logged out users, or both-->
+                {% block header %}
+                {% endblock header %}
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+    <footer class="page-footer">
+        <div class="footer-copyright">
+            <div class="container">
+            © 2014 Copyright Text
+            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script type="text/javascript">
+
+        var ingredients = []; 
+        var instructions = []; 
+        var disableItemClicks = false;
+    
+        var addIngredient = function(data, next_index){
+            var ingredient_item = $('<h6>').addClass("ingredient_item" + next_index);
+            $('#ingredients').append(ingredient_item);
+          
+            $(".ingredient_item" + next_index).wrap("<div class='expandable_box ingredient_parent" + next_index + "'></div>" );
+            var text = "<strong>Ingredient: " + data.ingredient + "</strong> ( " + data.amount + " )";
+            if(data.allergens.length != 0 ) {
+               text += " - <em>Allergens: " + data.allergens.join(", ") + "</em> ";
+            }
+            text += "<a id='delete-ingredient" + next_index + "' class='delete-ingredient" + next_index +" delete-data' value=" + next_index + "></a>";
+            $('.ingredient_item' + next_index).html(text);
+            $('.delete-ingredient' + next_index).html("<i class='fa fa-minus-circle' aria-hidden='true'></i>"); //adds font-awesome symbol
+        }
+           
+        var ingredientDeleted = false;
+        var accessIngredientDeletes = function(){ // accesses ingredients delete buttons
+            ingredientDeleted = false;
+            for(var i =0; i < ingredients.length; i++){
+                $("#delete-ingredient" + i ).on("click", function(v){
+                    if (ingredientDeleted == false && disableItemClicks == false) {
+                        //allows click once
+                        v = $(this).attr("value");
+                   
+                        var spliced = ingredients.splice(eval(v), 1);
+                        ingredientDeleted = true;
+                            
+                        $("#ingredients").empty();
+                        for (var k=0; k < ingredients.length; k++) {
+                            addIngredient(ingredients[k], k);
+                        }
+                    }
+                    if (i == (ingredients.length + 1)) {
+                        return accessIngredientDeletes();
+                    }
+                })
+            }            
+        }
+        
+        var addInstruction = function(data, index){
+            var instruction = data + "  <a id='edit-instruction" + index + "' class='edit-instruction" 
+                + index + " edit-data' value=" + index + "></a> " + " <a id='delete-instruction" 
+                + index + "' class='delete-instruction" + index + " delete-data' value=" + index + "></a>";
+            
+            if(index >= $("#instruction-list").children().length){
+                //if it is new
+                $("#instruction-list").append(
+                    $('<li/>').attr('id', 'instruction-item' + index).addClass('instruction-item' + index).html(instruction)
+                );
+            } else {
+                //if it is replacing old
+                $( "#instruction-item" + index ).replaceWith( 
+                    $('<li/>').attr('id', 'instruction-item' + index).addClass('instruction-item' + index).html(instruction) 
+                );
+            }
+            //adds font-awesome symbols
+            $('.delete-instruction' + index).html("<i class='fa fa-minus-circle' aria-hidden='true'></i>");
+            $('.edit-instruction' + index).html("<i class='fa fa-pencil-square' aria-hidden='true'></i>");
+        }
+            
+        var accessInstructionEdits = function(){ //accesses each instruction edit button
+            //returns false when called;
+            for(var i=0; i < instructions.length; i++){
+                $("#edit-instruction" + i ).on("click", function(e){
+                    if(disableItemClicks == false){
+                    e = $(this).attr("value");
+                    var list_number = eval(e)+1;
+                   
+                    $(".instruction_add_button").after(
+                            "<div id='edit_instruction_form'><div class='input-field col s6'>" +
+                            "<input value='" + instructions[e] + "' id='edit_instruction_input' type='text' class='validate'>" +
+                            "<label class='active' for='edit_instruction'>Edit Instruction " + list_number + "</label>" + "</div>" +
+                            "<div id='save_instruction_edit' class='save_instruction_edit col s4'>" +
+                                "<a class='waves-effect waves-light btn' id='save_instruction_edit"+e+"' value='"+e+"'>" +
+                                    "<i class='material-icons left'>edit</i>save instruction edit" +
+                                "</a>" +
+                            "</div></div>"
+                    );
+                    disableItemClicks = true;
+                    $("#save_instruction_edit" + e ).on("click", function(t){
+                        t = $(this).attr("value");//edit number
+                        
+                        instructions[t] = $('#edit_instruction_input').val();
+                        //addInstruction($('#edit_instruction_input').val(), t);
+                        $("#instruction-list").empty();//restarting
+                        for (var j=0; j<instructions.length; j++) {
+                            addInstruction(instructions[j], j);
+                        }
+                        
+                        $("#edit_instruction_form").remove();
+                        accessInstructionDeletes();
+                        accessInstructionEdits();
+                        disableItemClicks = false;
+                        return disableItemClicks;
+                    })
+                }
+            })
+            }
+        }
+        var instructionDeleted = false;//initial default
+        var accessInstructionDeletes = function(){//accesses each instruction delete button
+            //returns false when called;
+           instructionDeleted = false;
+            for(var i=0; i < instructions.length; i++){
+                /* navbar dropdown button */
+                $("#delete-instruction" + i ).on("click", function(d){
+                    if (instructionDeleted == false && disableItemClicks == false) {
+                        //allows click once
+                        d = $(this).attr("value");
+                        var spliced = instructions.splice(eval(d), 1);
+                       
+                        instructionDeleted = true;
+                        
+                        $("#instruction-list").empty();
+                        for (var j=0; j<instructions.length; j++) {
+                            addInstruction(instructions[j], j);
+                        }
+                    }
+                    console.log(i);
+                    console.log(instructions.length)
+                    if (i == (instructions.length + 1)) {
+                        accessInstructionEdits();
+                        return accessInstructionDeletes();
+                    }
+                })
+            }
+        }
+        $(document).ready(function() {
+            $(".button-collapse").sideNav();
+            //$(".dropdown-trigger").dropdown();
+            $("#add_ingredient_data").on("click", function() {
+                if ($('#ingredient_name').val().length == 0){
+                    return alert("Ingredient Name field empty");
+                } 
+                if ($('#ingredient_amount').val().length == 0){
+                    return alert("Ingredient Amount field empty");
+                }
+                var newIngObj = {
+                    'ingredient' : $('#ingredient_name').val(),
+                    'amount' : $('#ingredient_amount').val(),
+                    'allergens' : []
+                }
+                var addAllergy = function(e){
+                    if(e.length > 0){
+                        var content = e;
+                        newIngObj.allergens.push(content);
+                    }
+                }
+                addAllergy($('#ingredient_allergy1').val());
+                addAllergy($('#ingredient_allergy2').val());
+                addAllergy($('#ingredient_allergy3').val());
+                addAllergy($('#ingredient_allergy4').val());
+                addAllergy($('#ingredient_allergy5').val());                    
+                var i = ingredients.length; //gets associated pushed array.                    
+                ingredients.push(newIngObj);
+                    
+                $("#ingredients").empty();
+                for (var j=0; j<ingredients.length; j++) {
+                    addIngredient(ingredients[j], j);
+                }
+                accessIngredientDeletes();
+                    
+                //https://stackoverflow.com/questions/49266786/error-when-using-json-to-send-javascript-object-to-python-flask
+                //https://stackoverflow.com/questions/53694709/passing-javascript-array-in-python-flask
+            }) 
+            $("#add_instruction_data").on("click", function() {
+                if ($("#recipe_instruction_input").val().length == 0){
+                    return alert("Instruction Input Empty!! Cant add to the list.")
+                };                    
+                var i = instructions.length;
+                    instructions.push($("#recipe_instruction_input").val());
+                //addInstruction($("#recipe_instruction_input").val(), i);
+         
+                $("#recipe_instruction_input").val('');
+                    
+                    
+                $("#instruction-list").empty();
+                for (var j=0; j<instructions.length; j++) {
+                     addInstruction(instructions[j], j);
+                }
+                
+                accessInstructionDeletes();
+                accessInstructionEdits();
+            })
+
+            $("#save_recipe").on("click", function(e){
+                console.log( $("#recipe_description").val())
+                    var recipe_data = {
+                        "recipe_name": $("#recipe_name").val(),
+                        "recipe_cuisine": $("#recipe_cuisine").val(),
+                        "recipe_description": $("#recipe_description").val(),
+                        "recipe_ingredients": ingredients,
+                        "recipe_instructions": instructions,
+                        "recipe_views": 0,
+                        "recipe_upvotes": 0
+                    }
+                    $.ajax({
+                        type: AJAX_method,
+                        contentType: 'application/json',
+                        url: AJAX_url,
+                        dataType : "json",
+                        data: JSON.stringify(recipe_data),
+                        success: function(response) {
+                            console.log(response);
+                        },error : function(error){
+                            console.log(error);
+                        }
+                    });
+                    e.preventDefault();
+                    return true;
+                })
+            })
+</script>
+{% block scripts %}
+{% endblock scripts %}
+ </body>
+</html>

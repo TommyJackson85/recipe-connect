@@ -1,0 +1,132 @@
+{% extends 'base.html' %} 
+{% block header %}
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+</ul>
+<ul class="side-nav" id="mobile-demo">
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+    <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+</ul>
+{% endblock header %}
+
+{% block content %}
+<h4>Edit Recipe</h4>
+<h6>Welcome {{ user.user_name }}!</h6>
+<div class="row">
+    <form id="form" class="col s12">
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="recipe_name" name="recipe_name" type="text" value="{{ recipe_name }}">
+                <label for="icon_prefix">Name</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="recipe_cuisine" name="recipe_cuisine" type="text" value="{{ recipe_cuisine }}">
+                <label for="icon_prefix">Cuisine</label>
+            </div>
+            <!--
+            <div class="input-field col s12">
+                <input id="recipe_description" name="recipe_description" type="text" value="{{ recipe_description }}">
+                <label for="icon_prefix">Description</label>
+            </div>-->
+            <div class="input-field col s12">
+                <textarea id="recipe_description" class="materialize-textarea" name="recipe_description" type="text">{{ recipe_description }}</textarea>
+                <label for="icon_prefix">Description</label>
+            </div>
+        </div>
+        <!--class="materialize-textarea"-->
+        <div class="ingredient_list_builder">
+            <div class="row">
+            <h6>Add Ingrediant</h6>
+            <!--used by JavaScript-->
+            <div class="input-field col s6">
+                <input id="ingredient_name" type="text">
+                <label for="icon_prefix">Ingredient</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_amount" type="text">
+                <label for="icon_prefix">Amount</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_allergy1" type="text">
+                <label for="icon_prefix">Allergy</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_allergy2" type="text">
+                <label for="icon_prefix">Allergy</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_allergy3" type="text">
+                <label for="icon_prefix">Allergy</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_allergy4" type="text">
+                <label for="icon_prefix">Allergy</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ingredient_allergy5" type="text">
+                <label for="icon_prefix">Allergy</label>
+            </div>
+            <div class="list-builder-button col s6">
+                <a class="waves-effect waves-light btn" id="add_ingredient_data"><i class="material-icons left">add</i>add to list</a>
+            </div>
+            <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
+            <div class='ingredients-box col s12'>
+                <h6 class="">Ingredients Box:</h6>
+                <div class="ingredients col" id="ingredients">
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="instruction_list_builder">
+            <div class="row">
+                <h6>Add Instruction</h6>
+                <div class="input-field col s12">
+                    <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
+                    <label for="icon_telephone">Recipe Instruction</label>
+                </div>
+                <div id="instruction_add_button" class="instruction_add_button col s4">
+                    <a class="waves-effect waves-light btn" id="add_instruction_data"><i class="material-icons left">add</i>add to list</a>
+                </div>
+            </div>
+            <div class="instructions">
+                <ol id="instruction-list">
+                </ol>
+            </div>
+        </div>
+        <button id="save_recipe" class="btn waves-effect waves-light" type="submit" value="new" name="action">Submit
+            <i class="material-icons right">send</i>
+        </button>
+    </form>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+        //Arrays for list builders    
+       // ingredients = [];
+        //instructions= [];
+        /*variables for edit_recipe*/
+        var AJAX_url = "{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}";
+        var AJAX_method = "POST";
+            //Arrays for list builders    
+        $( document ).ready(function() {
+            //receives current ingredients and instructions data from Python
+            
+            ingredients = JSON.parse({{ ingredients|tojson|safe }});
+            instructions = JSON.parse({{ instructions|tojson|safe }});
+            for (var i=0; i<ingredients.length; i++) {
+                addIngredient(ingredients[i], i);
+            }
+            for (var i=0; i<instructions.length; i++) {
+                addInstruction(instructions[i], i);
+            }
+            //access ingredient and instruction button functions
+            accessIngredientDeletes();
+            accessInstructionDeletes();
+            accessInstructionEdits();
+        });
+</script>
+{% endblock scripts %}
