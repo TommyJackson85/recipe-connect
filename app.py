@@ -10,6 +10,7 @@ app.config["MONGO_DBNAME"] = 'recipe-manager'
 
 app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
 
+
 mongo = PyMongo(app)   
 
 #used to check if user is logged in and if it has foreign key of user id
