@@ -3,6 +3,8 @@ from flask import Flask, render_template, redirect, request, url_for, jsonify
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId 
 from bson import json_util
+import sys
+print(sys.path)
 
 
 app = Flask(__name__)
