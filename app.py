@@ -1,4 +1,4 @@
-import os, json, ast, requests
+import os, json, ast
 from flask import Flask, render_template, redirect, request, url_for, jsonify
 
 from bson import json_util
