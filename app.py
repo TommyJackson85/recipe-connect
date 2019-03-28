@@ -10,9 +10,7 @@ print(sys.path)
 
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
-app.config["MONGO_URI"] = os.getenv('MONGOURI')
-#app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
-
+app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
 
 mongo = PyMongo(app)   
 
