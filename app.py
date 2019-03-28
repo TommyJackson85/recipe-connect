@@ -1,16 +1,17 @@
 import os, json, ast, requests
 from flask import Flask, render_template, redirect, request, url_for, jsonify
-from flask_pymongo import PyMongo
-from bson.objectid import ObjectId 
+
 from bson import json_util
+from bson.objectid import ObjectId
+from flask_pymongo import PyMongo
 import sys
 print(sys.path)
 
 
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
-
-app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
+app.config["MONGO_URI"] = 'MONGOURI'
+#app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
 
 
 mongo = PyMongo(app)   
