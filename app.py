@@ -167,8 +167,5 @@ def delete_recipe(user_id, recipe_id):
 def search_recipe():
     return render_template("search_recipes.html", 
                             recipes=mongo.db.recipes.find()) 
-    
-if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'),
-            port=int(os.environ.get('PORT')),
-            debug=True)
+if __name__ == '__main__':      
+    app.run(host=os.getenv('IP'), port=int(os.getenv('PORT')), debug=True)
