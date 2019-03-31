@@ -1,5 +1,15 @@
+/*colors*/
+.green_text {
+    color: green;
+}
+
+.red_text {
+    color: red;
+}
+
 body{
-    background-color: green;
+    background-color: #0D4E49;/*dark green*/
+    color: white;
     display: flex;
     min-height: 100vh;
     flex-direction: column;
@@ -7,6 +17,20 @@ body{
 
 main {
     flex: 1 0 auto;
+}
+
+.regular_box_item {
+    display: flex;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.5;
+    padding: 1rem;
+    background-color: #fff;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+.collapsible-header, .collapsible-body {
+    background:  #41837E;
 }
 
 .btn_small{
@@ -21,11 +45,20 @@ main {
     color: red;
 }
 
-.ingredient_list_builder {
-    background: yellow;
+.fa-minus-circle, .fa-pencil-square {
+    margin: 0px 5px 0px 5px;
 }
+
+.welcome_header {
+    text-align: center;
+}
+
+.ingredient_list_builder {
+    background: #41837E;
+}
+
 .instruction_list_builder{
-    background: orange;
+    background: #41837E;
 }
 
 .list-builder-button {
@@ -34,9 +67,32 @@ main {
 
 .ingredients, .instructions {
     width: 100%;
+    min-height: 60px;
+    overflow:auto; 
     padding: 5px 2px;
     margin: 5px 0px;
     border-style: solid;
     border-color: red;
+    border-radius: 5px;
     border-width: 5px;
+}
+
+.ingredient_parent {
+    overflow:auto;
+    display:inline-block;
+    background: #AA9E39;
+    color: black;
+    margin:5px 5px 5px 5px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 5px;
+}
+.ingredient_parent h6 {
+    display:inline-block;
+}
+
+.instruction_editing_section{
+    margin: 0px 5px 5px 5px;
+    padding-bottom: 5px;
+    overflow:auto;
+    background-color: #105A6B;/*yellow*/
 }

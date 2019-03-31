@@ -2,27 +2,38 @@
 
 {% block header %}
 <ul id="nav-mobile" class="right hide-on-med-and-down">
-    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
+    <li><a href="{{url_for('login_register', new_register=False, user_exists=False)}}">Login/Register</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
-    <li><a href="{{url_for('login_register')}}">Login/Register</a></li>
+    <li><a href="{{url_for('login_register', new_register=False, user_exists=False)}}">Login/Register</a></li>
 </ul>
 {% endblock header %}
 
 {% block content %}
+    {% if new_register == 'True' %}
+        {% if user_exists == 'True' %}
+        <h5 class="welcome_header red_text">User already exists!</h5>
+        {% else %}
+        <h5 class="welcome_header green_text">Registration was a success!</h5>
+        {% endif %}
+    {% else %}
+        <h5 class="welcome_header">Welcome to Recipe Connect! Login or Register below:</h5>
+    {% endif %}
 <div class="row">
     <div class="col s12">
         <form id="login-form" method="POST" action="{{ url_for('login_user', user_id=user_id) }}">
             <div class="row">
-                <h6>Login Here!</h6>
-                <div class="input-field col s12">
-                    <i class="material-icons prefix">textsms</i>
-                    <input type="text" id="user-login-input" name="user_name" class="user-login">
-                    <label for="user-login-input">Login Username</label>
+                <div class="col s12 l6 push-l3">
+                    <h6>Login Here!</h6>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">textsms</i>
+                        <input type="text" id="user-login-input" name="user_name" class="user-login">
+                        <label for="user-login-input">Login Username</label>
+                    </div>
+                    <button id="submit_login" class="btn waves-effect waves-light" type="submit" value="new" name="action">Login
+                        <i class="material-icons right">send</i></i>
+                    </button>
                 </div>
-                <button id="submit_login" class="btn waves-effect waves-light" type="submit" value="new" name="action">Login
-                    <i class="material-icons right">send</i></i>
-                </button>
             </div>
         </form>
     </div>
@@ -31,6 +42,7 @@
     <div class="col s12">
         <form id="register-form" method="POST" action="{{ url_for('register_user') }}">
             <div class="row">
+            <div class="col s12 l6 push-l3">
                 <h6>Don't have an account? Register here!</h6>
                 <div class="input-field col s12">
                     <i class="material-icons prefix">textsms</i>
@@ -45,6 +57,7 @@
                 <button id="submit_register" class="btn waves-effect waves-light" type="submit" name="action">Register
                     <i class="material-icons right">send</i>
                 </button>
+            </div>
             </div>
         </form>
     </div>

@@ -37,21 +37,22 @@
     <script type="text/javascript">
 
         var ingredients = []; 
-        var instructions = []; 
+        var instructions = [];
+        var allergen_summary = [];
         var disableItemClicks = false;
     
         var addIngredient = function(data, next_index){
             var ingredient_item = $('<h6>').addClass("ingredient_item" + next_index);
             $('#ingredients').append(ingredient_item);
           
-            $(".ingredient_item" + next_index).wrap("<div class='expandable_box ingredient_parent" + next_index + "'></div>" );
+            $(".ingredient_item" + next_index).wrap("<div class='expandable_box ingredient_parent ingredient_parent" + next_index + "'></div>" );
             var text = "<strong>Ingredient: " + data.ingredient + "</strong> ( " + data.amount + " )";
             if(data.allergens.length != 0 ) {
                text += " - <em>Allergens: " + data.allergens.join(", ") + "</em> ";
             }
             text += "<a id='delete-ingredient" + next_index + "' class='delete-ingredient" + next_index +" delete-data' value=" + next_index + "></a>";
             $('.ingredient_item' + next_index).html(text);
-            $('.delete-ingredient' + next_index).html("<i class='fa fa-minus-circle' aria-hidden='true'></i>"); //adds font-awesome symbol
+            $('.delete-ingredient' + next_index).html("<i class='fa fa-minus-circle fa-2x' aria-hidden='true'></i>"); //adds font-awesome symbol
         }
            
         var ingredientDeleted = false;
@@ -95,32 +96,37 @@
                 );
             }
             //adds font-awesome symbols
-            $('.delete-instruction' + index).html("<i class='fa fa-minus-circle' aria-hidden='true'></i>");
-            $('.edit-instruction' + index).html("<i class='fa fa-pencil-square' aria-hidden='true'></i>");
+            $('.delete-instruction' + index).html("<i class='fa fa-minus-circle fa-2x' aria-hidden='true'></i>");
+            $('.edit-instruction' + index).html("<i class='fa fa-pencil-square fa-2x' aria-hidden='true'></i>");
         }
             
         var accessInstructionEdits = function(){ //accesses each instruction edit button
             //returns false when called;
             for(var i=0; i < instructions.length; i++){
                 $("#edit-instruction" + i ).on("click", function(e){
+                    console.log("edit_instruction is clicked!")
                     if(disableItemClicks == false){
                     e = $(this).attr("value");
                     var list_number = eval(e)+1;
                    
-                    $(".instruction_add_button").after(
-                            "<div id='edit_instruction_form'><div class='input-field col s6'>" +
-                            "<input value='" + instructions[e] + "' id='edit_instruction_input' type='text' class='validate'>" +
-                            "<label class='active' for='edit_instruction'>Edit Instruction " + list_number + "</label>" + "</div>" +
+                    $("#instruction_adding_section").before(
+                        "<div id='instruction_editing_section' class='instruction_editing_section'>" +
+                            "<div id='edit_instruction_form'>" +
+                                "<div class='input-field col s12'>" +
+                                    "<textarea id='edit_instruction_input' class='materialize-textarea'>" + instructions[e] + "</textarea>" +
+                                    "<label class='active' for='edit_instruction'>Edit Instruction " + list_number + "</label>" + 
+                                "</div>" +
                             "<div id='save_instruction_edit' class='save_instruction_edit col s4'>" +
                                 "<a class='waves-effect waves-light btn' id='save_instruction_edit"+e+"' value='"+e+"'>" +
                                     "<i class='material-icons left'>edit</i>save instruction edit" +
                                 "</a>" +
-                            "</div></div>"
+                            "</div>" + 
+                        "</div>"
                     );
                     disableItemClicks = true;
                     $("#save_instruction_edit" + e ).on("click", function(t){
+                        console.log("save_instruction_edit is clicked!")
                         t = $(this).attr("value");//edit number
-                        
                         instructions[t] = $('#edit_instruction_input').val();
                         //addInstruction($('#edit_instruction_input').val(), t);
                         $("#instruction-list").empty();//restarting
@@ -128,7 +134,7 @@
                             addInstruction(instructions[j], j);
                         }
                         
-                        $("#edit_instruction_form").remove();
+                        $("#instruction_editing_section").remove();
                         accessInstructionDeletes();
                         accessInstructionEdits();
                         disableItemClicks = false;
@@ -145,6 +151,7 @@
             for(var i=0; i < instructions.length; i++){
                 /* navbar dropdown button */
                 $("#delete-instruction" + i ).on("click", function(d){
+                    console.log("delete_instruction is clicked!")
                     if (instructionDeleted == false && disableItemClicks == false) {
                         //allows click once
                         d = $(this).attr("value");
@@ -181,6 +188,7 @@
                     'amount' : $('#ingredient_amount').val(),
                     'allergens' : []
                 }
+
                 var addAllergy = function(e){
                     if(e.length > 0){
                         var content = e;
@@ -194,7 +202,16 @@
                 addAllergy($('#ingredient_allergy5').val());                    
                 var i = ingredients.length; //gets associated pushed array.                    
                 ingredients.push(newIngObj);
-                    
+                
+                //emptying ingredient input values
+                $('#ingredient_name').val('');
+                $('#ingredient_amount').val('');
+                $("#ingredient_allergy1").val(''); 
+                $("#ingredient_allergy2").val('');
+                $("#ingredient_allergy3").val(''); 
+                $("#ingredient_allergy4").val(''); 
+                $("#ingredient_allergy5").val('');
+                
                 $("#ingredients").empty();
                 for (var j=0; j<ingredients.length; j++) {
                     addIngredient(ingredients[j], j);
@@ -214,7 +231,6 @@
          
                 $("#recipe_instruction_input").val('');
                     
-                    
                 $("#instruction-list").empty();
                 for (var j=0; j<instructions.length; j++) {
                      addInstruction(instructions[j], j);
@@ -224,9 +240,16 @@
                 accessInstructionEdits();
             })
 
-            $("#save_recipe").on("click", function(e){
+            $("#save_recipe").on("click", function(){
+                
+                var array_inputs = "<input id='recipe_instructions' name='recipe_instructions' type='text' value='" + JSON.stringify(instructions) + "'>" +
+                "<input id='recipe_ingredients' name='recipe_ingredients' type='text' value='" + JSON.stringify(ingredients) + "'>" +
+                "<input id='recipe_allergen_summary' name='recipe_allergen_summary' type='text' value='" + JSON.stringify(allergen_summary) + "'>";
+                $('#array_inputs').html(array_inputs);
+                console.log('done')
+            
                 console.log( $("#recipe_description").val())
-                    var recipe_data = {
+                    /*var recipe_data = {
                         "recipe_name": $("#recipe_name").val(),
                         "recipe_cuisine": $("#recipe_cuisine").val(),
                         "recipe_description": $("#recipe_description").val(),
@@ -248,7 +271,7 @@
                         }
                     });
                     e.preventDefault();
-                    return true;
+                    return true;*/
                 })
             })
 </script>

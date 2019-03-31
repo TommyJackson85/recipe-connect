@@ -13,10 +13,9 @@
 {% endblock header %}
 
 {% block content %}
-<h4>Edit Recipe</h4>
-<h6>Welcome {{ user.user_name }}!</h6>
+<h5 class="welcome_header">Welcome {{ user.user_name }}! Edit your recipe here:</h5>
 <div class="row">
-    <form id="form" class="col s12">
+    <form id="form" class="col s12" method="POST" action="{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}">
         <div class="row">
             <div class="input-field col s12">
                 <input id="recipe_name" name="recipe_name" type="text" value="{{ recipe_name }}">
@@ -26,20 +25,22 @@
                 <input id="recipe_cuisine" name="recipe_cuisine" type="text" value="{{ recipe_cuisine }}">
                 <label for="icon_prefix">Cuisine</label>
             </div>
-            <!--
             <div class="input-field col s12">
-                <input id="recipe_description" name="recipe_description" type="text" value="{{ recipe_description }}">
-                <label for="icon_prefix">Description</label>
-            </div>-->
-            <div class="input-field col s12">
-                <textarea id="recipe_description" class="materialize-textarea" name="recipe_description" type="text">{{ recipe_description }}</textarea>
-                <label for="icon_prefix">Description</label>
+                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text">{{ recipe_description }}</textarea>
+                <label for="icon_telephone">Description</label>
+            </div>
+            <div id="array_inputs" class="input-field col s12 hidden">
             </div>
         </div>
-        <!--class="materialize-textarea"-->
         <div class="ingredient_list_builder">
             <div class="row">
             <h6>Add Ingrediant</h6>
+            <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
+            <div class='ingredients-box col s12'>
+                <h6 class="">Ingredients Box:</h6>
+                <div class="ingredients" id="ingredients">
+                </div>
+            </div>
             <!--used by JavaScript-->
             <div class="input-field col s6">
                 <input id="ingredient_name" type="text">
@@ -72,28 +73,24 @@
             <div class="list-builder-button col s6">
                 <a class="waves-effect waves-light btn" id="add_ingredient_data"><i class="material-icons left">add</i>add to list</a>
             </div>
-            <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
-            <div class='ingredients-box col s12'>
-                <h6 class="">Ingredients Box:</h6>
-                <div class="ingredients col" id="ingredients">
-                </div>
-            </div>
         </div>
         </div>
         <div class="instruction_list_builder">
-            <div class="row">
-                <h6>Add Instruction</h6>
-                <div class="input-field col s12">
-                    <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
-                    <label for="icon_telephone">Recipe Instruction</label>
-                </div>
-                <div id="instruction_add_button" class="instruction_add_button col s4">
-                    <a class="waves-effect waves-light btn" id="add_instruction_data"><i class="material-icons left">add</i>add to list</a>
-                </div>
-            </div>
-            <div class="instructions">
+            <h6>Add Instruction</h6>
+            <div class="instruction-box">
                 <ol id="instruction-list">
                 </ol>
+            </div>
+            <div class="row">
+                <div id="instruction_adding_section">
+                    <div class="input-field col s12">
+                        <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
+                        <label for="icon_telephone">New Instruction</label>
+                    </div>
+                    <div id="instruction_add_button" class="instruction_add_button col s4">
+                        <a class="waves-effect waves-light btn" id="add_instruction_data"><i class="material-icons left">add</i>add to list</a>
+                    </div>
+                </div>
             </div>
         </div>
         <button id="save_recipe" class="btn waves-effect waves-light" type="submit" value="new" name="action">Submit
@@ -108,6 +105,7 @@
         //Arrays for list builders    
        // ingredients = [];
         //instructions= [];
+        
         /*variables for edit_recipe*/
         var AJAX_url = "{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}";
         var AJAX_method = "POST";
@@ -116,6 +114,7 @@
             //receives current ingredients and instructions data from Python
             
             ingredients = JSON.parse({{ ingredients|tojson|safe }});
+            allergen_summary = [];
             instructions = JSON.parse({{ instructions|tojson|safe }});
             for (var i=0; i<ingredients.length; i++) {
                 addIngredient(ingredients[i], i);

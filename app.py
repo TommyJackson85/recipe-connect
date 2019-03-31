@@ -10,7 +10,8 @@ print(sys.path)
 
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
-app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
+#app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
+app.config["MONGO_URI"] = 'mongodb://bigtom98:funnybone98@ds131997.mlab.com:31997/recipe-manager'
 
 mongo = PyMongo(app)   
 
@@ -25,15 +26,30 @@ def index():
         return redirect(url_for('user_recipes', user_id=user_id))
     
     if logged_in == False:
-        return redirect(url_for('login_register'))
-    
+        user_exists=False
+        new_register=False
+        return redirect(url_for('login_register',
+                                user_exists=user_exists,
+                                new_register=new_register))
+                                
+@app.route('/login_register/<user_exists>/<new_register>', methods=['POST', 'GET'])
+def login_register(new_register, user_exists):
+        return render_template('login_register.html',
+                                user_exists=user_exists,
+                                new_register=new_register)
+
+
 #COME BACK AFTER FIXING foreign keys
 @app.route('/logout_user', methods=['POST', 'GET'])
 def logout_user():
     logbase = mongo.db.logbase.find_one({"data_type": "log"})
     logged_in=logbase['logged_in']
+    user_exists=False,
+    new_register=False
     if logged_in == False:
-        return redirect('login_register')
+        return redirect(url_for('login_register',
+                        user_exists=user_exists,
+                        new_register=new_register))
     if logged_in == True:
         mongo.db.logbase.update({"data_type": "log"},
         {
@@ -41,25 +57,34 @@ def logout_user():
             "logged_in": False,
             "user_id": ""
         })
-        return redirect(url_for('login_register'))
+        return redirect(url_for('login_register',
+                                user_exists=user_exists,
+                                new_register=new_register))
 
-@app.route('/login_register', methods=['POST', 'GET'])
-def login_register():
-        return render_template('login_register.html')
-
-@app.route('/register_user', methods=['POST', 'GET'])
+@app.route('/register_user/', methods=['POST', 'GET'])
 def register_user():
     users = mongo.db.users
     new_register = request.form.to_dict()
-    user_name = new_register["user_name"]
-    user_country = new_register["user_country"]
-    #print(user)
-    users.insert_one({
-            "user_name":user_name,
-            "user_country":user_country
-    })
-    #print(new_register)
-    return redirect(url_for('login_register'))
+    print(mongo.db.users.find({ 'user_name': new_register['user_name']   }).count())
+    if mongo.db.users.find({'user_name': new_register['user_name']}).count() > 0:
+        new_register=True
+        user_exists=True
+        return redirect(url_for('login_register',
+                                user_exists=user_exists,
+                                new_register=new_register))
+    else:
+        user_name = new_register["user_name"]
+        user_country = new_register["user_country"]
+        users.insert_one({
+                "user_name":user_name,
+                "user_country":user_country,
+                "recipe_ids":[]
+        })
+        user_exists=False
+        new_register=True
+        return redirect(url_for('login_register',
+                                user_exists=user_exists,
+                                new_register=new_register))
     
 
 @app.route('/login_user', methods=['POST', 'GET'])
@@ -73,50 +98,64 @@ def login_user():
             "data_type": "log",
             "user_id": ObjectId(user_id)
     })
+    new_register = False
     return redirect(url_for('user_recipes',
                     user_id=user_id))
     
 @app.route('/user_recipes/<user_id>')
 def user_recipes(user_id):
-    return render_template("user_recipes.html", 
-                            user_id=user_id,
-                            user=mongo.db.users.find_one({ "_id": ObjectId(user_id)     }),
-                            recipes=mongo.db.recipes.find({ "user_id": ObjectId(user_id)    })
-                            )
+    user=mongo.db.users.find_one({  "_id": ObjectId(user_id)     })
+    recipe_ids = user['recipe_ids']
+    if(len(recipe_ids) == 0):
+            print(len(recipe_ids))
+            return render_template("user_recipes.html",
+                                    user_has_recipes=False,
+                                    user_id=user_id,
+                                    user=mongo.db.users.find_one({ "_id": ObjectId(user_id)     }),
+                                    )
+    if(len(recipe_ids) > 0):
+            recipes=mongo.db.recipes.find({ '_id': {'$in': recipe_ids} })
+            print(recipes)
+            return render_template("user_recipes.html",
+                                    user_has_recipes=True,
+                                    user_id=user_id,
+                                    user=mongo.db.users.find_one({ "_id": ObjectId(user_id)     }),
+                                    recipes=recipes)
+        
                             
 @app.route('/add_recipe/<user_id>')
 def add_recipe(user_id):
     return render_template("add_recipe.html", 
                             user_id=user_id,
                             user=mongo.db.users.find_one({  "_id": ObjectId(user_id)    }),
-                            recipes=mongo.db.recipes.find() 
-                            )
+                            recipes=mongo.db.recipes.find())
 
 @app.route('/insert_recipe/<user_id>', methods=['POST', 'GET'])
 def insert_recipe(user_id):
     if request.method == 'POST':
-        new_data = request.get_json()
-        mongo.db.recipes.insert_one(
+        #new_data = request.get_json()
+        new_data= request.form.to_dict()
+
+        recipe_ingredients = json.loads(new_data['recipe_ingredients'])
+        recipe_instructions = json.loads(new_data['recipe_instructions'])
+        
+        recipe_id = mongo.db.recipes.insert(
         {       
                 "user_id": ObjectId(user_id),
                 "recipe_name":new_data["recipe_name"],
                 "recipe_cuisine":new_data["recipe_cuisine"],
                 "recipe_description":new_data["recipe_description"],
-                "recipe_ingredients":new_data["recipe_ingredients"],
-                "recipe_instructions":new_data["recipe_instructions"],
-                "recipe_views":new_data["recipe_views"],
-                "recipe_upvotes":new_data["recipe_upvotes"]
-        })            
+                "recipe_ingredients":recipe_ingredients,
+                "recipe_instructions":recipe_instructions,
+                "recipe_views":0,
+                "recipe_upvotes":0
+        })
+        print(recipe_id)
+        mongo.db.users.update({'_id': ObjectId(user_id)}, 
+            { '$push': { 'recipe_ids': recipe_id } }
+        )
         return redirect(url_for('user_recipes',
                                 user_id=user_id))
- 
-        """
-        next_page = url_for('user_recipes',
-                            _external=True,
-                            _scheme='https')
-
-        return redirect(next_page, code=302)
-        """
 
 @app.route('/edit_recipe/<user_id>/<recipe_id>', methods=['GET'])
 def edit_recipe(user_id, recipe_id):
@@ -140,24 +179,27 @@ def edit_recipe(user_id, recipe_id):
 @app.route('/update_recipe/<user_id>/<recipe_id>', methods=['POST', 'GET'])
 def update_recipe(user_id, recipe_id):
     recipes = mongo.db.recipes
-    edited_data = request.get_json()
+    edited_data = request.form.to_dict()
+    recipe_instructions = json.loads(edited_data["recipe_instructions"])
+    recipe_ingredients = json.loads(edited_data["recipe_ingredients"])
     recipes.update( {'_id': ObjectId(recipe_id)}, 
-    {
-            "user_id": ObjectId(user_id),
-            "recipe_name":edited_data["recipe_name"],
-            "recipe_cuisine":edited_data["recipe_cuisine"],
-            "recipe_description":edited_data["recipe_description"],
-            "recipe_ingredients":edited_data["recipe_ingredients"],
-            "recipe_instructions":edited_data["recipe_instructions"],
-            "recipe_views":edited_data["recipe_views"],
-            "recipe_upvotes":edited_data["recipe_upvotes"]
-    })
+        {   "$set":
+                {
+                    "recipe_name":edited_data["recipe_name"],
+                    "recipe_cuisine":edited_data["recipe_cuisine"],
+                    "recipe_description":edited_data["recipe_description"],
+                    "recipe_ingredients":recipe_ingredients,
+                    "recipe_instructions":recipe_instructions
+                }
+        })
     return redirect(url_for('user_recipes',
                             user_id=user_id))
 
 @app.route('/delete_recipe/<user_id>/<recipe_id>', methods=['GET'])
 def delete_recipe(user_id, recipe_id):
     mongo.db.recipes.remove({'_id': ObjectId(recipe_id)})
+    mongo.db.users.update({'_id': ObjectId(user_id)},
+    { '$pull': { 'recipe_ids': ObjectId(recipe_id) } })
     return redirect(url_for('user_recipes',
                             user_id=user_id))
 
