@@ -12,66 +12,69 @@
 </ul>
 {% endblock header %}
 {% block content %}
-        <h5 class="welcome_header">Welcome {{ user.user_name }}! Here are your built recipes:</h5>
-        <ul class="collapsible" data-collapsible="accordion">
+<div class="row">
+<div class="col s12 l10 push-l1 xl8 push-xl2">
+    <h5 class="welcome_header">Welcome <i class="green_text">{{ user.user_name }}</i> ~ Here are your built recipes:</h5>
+    <ul class="collapsible" data-collapsible="accordion">
         {% if user_has_recipes %}
-            {% for recipe in recipes %}
-            <li>
-                        <div class="collapsible-header">
-                            <div class=" recipe_header col s9">
-                                <i class="material-icons">expand_more</i> {{ recipe.recipe_name }} - Cuisine: {{ recipe.recipe_cuisine }} - Created: {{ recipe.recipe_date }}
-                                <a href="{{url_for('edit_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="waves-effect wavers-light btn btn_medium">Edit</a>
-                                <a href="{{url_for('delete_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="waves-effect wavers-light btn btn_medium">Delete</a>
-                            </div>
-                        </div>
-                        <div class="collapsible-body">
-                            <span>
-                                <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
-                                {% if recipe.recipe_ingredients|length > 0 %}
-                                <p><strong>Ingredients:</strong></p>
-                                {% endif %}
-                                {% for ingredient in recipe.recipe_ingredients %}
-                                <div class="expandable_box ingredient_parent">
-                                    <h6 class="ingredient_item">
-                                        <strong>{{ingredient.ingredient}}</strong>( {{ingredient.amount}} )
-                                        {% if ingredient.allergens|length > 0 %}
-                                        - <em>Allergens:
-                                        {% for allergen in ingredient.allergens %}
-                                            {% if loop.index == ingredient.allergens|length %}
+        {% for recipe in recipes %}
+        <li>
+            <div class="collapsible-header">
+                    <div class="recipe_header">
+                        <i class="material-icons">expand_more</i> {{ recipe.recipe_name }} - Cuisine: {{ recipe.recipe_cuisine }} - Created: {{ recipe.recipe_date }}
+                        <a href="{{url_for('edit_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="edit_recipe waves-effect wavers-light btn btn_medium">Edit</a>
+                        <a href="{{url_for('delete_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="delete_recipe waves-effect wavers-light btn btn_medium">Delete</a>
+                    </div>
+                </div>
+            <div class="collapsible-body">
+                    <span>
+                        <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
+                        {% if recipe.recipe_ingredients|length > 0 %}
+                        <p><strong>Ingredients:</strong></p>
+                        {% endif %}
+                        {% for ingredient in recipe.recipe_ingredients %}
+                        <div class="expandable_box ingredient_parent">
+                            <h6 class="ingredient_item">
+                                <strong>{{ingredient.ingredient}}</strong>( {{ingredient.amount}} )
+                                {% if ingredient.allergens|length > 0 %}
+                                    - <em>Allergens:
+                                    {% for allergen in ingredient.allergens %}
+                                        {% if loop.index == ingredient.allergens|length %}
                                             {{allergen}}
-                                            {% else %}
+                                        {% else %}
                                             {{allergen}}, 
-                                            {% endif %}
-                                        {% endfor %}
-                                        </em>
                                         {% endif %}
-                                    </h6>
-                                </div>
-                                {% endfor %}
-                                                       
-                                {% if recipe.recipe_instructions|length > 0 %}
-                                <p><strong>Instructions List:</strong></p>
+                                    {% endfor %}
+                                    </em>
                                 {% endif %}
-                                <ol>
-                                {% for instruction in recipe.recipe_instructions %}
-                                    <li>{{instruction}}</li>
-                                {% endfor %}   
-                                </ol>
-                            </span>
+                            </h6>
                         </div>
-                    </li>
-            {% endfor %}
+                        {% endfor %}
+                            {% if recipe.recipe_instructions|length > 0 %}
+                            <p><strong>Instructions List:</strong></p>
+                            {% endif %}
+                            <ol>
+                            {% for instruction in recipe.recipe_instructions %}
+                                <li>{{instruction}}</li>
+                            {% endfor %}   
+                            </ol>
+                    </span>
+                </div>
+        </li>
+        {% endfor %}
         {% else %}
-            <li>
-                <div class='regular_box_item'>
-                <div class=" recipe_header col s9">
+        <li>
+            <div class='regular_box_item'>
+                <div class="recipe_header">
                     <h6>No recipes built? Click Create Recipe below to start!</h6>
-                   <a href="{{url_for('add_recipe', user_id=user_id)}}" class="waves-effect wavers-light btn btn_large">Create Recipe</a>
+                    <a href="{{url_for('add_recipe', user_id=user_id)}}" class="waves-effect wavers-light btn btn_large">Create Recipe</a>
                 </div>
-                </div>
-            </li>
+            </div>
+        </li>
         {% endif %}
-        </ul>
+    </ul>
+</div>
+</div>
 {% endblock content %}
 
 {% block scripts %}

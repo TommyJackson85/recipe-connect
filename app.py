@@ -7,7 +7,6 @@ from flask_pymongo import PyMongo
 import sys
 print(sys.path)
 
-
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
 #app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
@@ -26,16 +25,20 @@ def index():
         return redirect(url_for('user_recipes', user_id=user_id))
     
     if logged_in == False:
-        user_exists=False
-        new_register=False
+        #initial boolean defaults on load
+        login_exists = True 
+        register_exists = False
+        new_register = False
         return redirect(url_for('login_register',
-                                user_exists=user_exists,
+                                login_exists=login_exists,
+                                register_exists=register_exists,
                                 new_register=new_register))
                                 
-@app.route('/login_register/<user_exists>/<new_register>', methods=['POST', 'GET'])
-def login_register(new_register, user_exists):
+@app.route('/login_register/<login_exists>/<register_exists>/<new_register>', methods=['POST', 'GET'])
+def login_register(new_register, login_exists, register_exists):
         return render_template('login_register.html',
-                                user_exists=user_exists,
+                                login_exists=login_exists,
+                                register_exists=register_exists,
                                 new_register=new_register)
 
 
@@ -44,11 +47,13 @@ def login_register(new_register, user_exists):
 def logout_user():
     logbase = mongo.db.logbase.find_one({"data_type": "log"})
     logged_in=logbase['logged_in']
-    user_exists=False,
-    new_register=False
+    login_exists = True
+    register_exists = False
+    new_register = False
     if logged_in == False:
         return redirect(url_for('login_register',
-                        user_exists=user_exists,
+                        login_exists=login_exists,
+                        register_exists=register_exists,
                         new_register=new_register))
     if logged_in == True:
         mongo.db.logbase.update({"data_type": "log"},
@@ -58,7 +63,8 @@ def logout_user():
             "user_id": ""
         })
         return redirect(url_for('login_register',
-                                user_exists=user_exists,
+                                login_exists=login_exists,
+                                register_exists=register_exists,
                                 new_register=new_register))
 
 @app.route('/register_user/', methods=['POST', 'GET'])
@@ -67,10 +73,12 @@ def register_user():
     new_register = request.form.to_dict()
     print(mongo.db.users.find({ 'user_name': new_register['user_name']   }).count())
     if mongo.db.users.find({'user_name': new_register['user_name']}).count() > 0:
-        new_register=True
-        user_exists=True
+        new_register = True
+        login_exists = True
+        register_exists = True
         return redirect(url_for('login_register',
-                                user_exists=user_exists,
+                                login_exists=login_exists,
+                                register_exists=register_exists,
                                 new_register=new_register))
     else:
         user_name = new_register["user_name"]
@@ -80,27 +88,42 @@ def register_user():
                 "user_country":user_country,
                 "recipe_ids":[]
         })
-        user_exists=False
-        new_register=True
+        login_exists = True
+        register_exists = False
+        new_register = True
         return redirect(url_for('login_register',
-                                user_exists=user_exists,
+                                login_exists=login_exists,
+                                register_exists=register_exists,
                                 new_register=new_register))
     
 
 @app.route('/login_user', methods=['POST', 'GET'])
 def login_user():
     posted_username = request.form.to_dict()
-    user = mongo.db.users.find_one({"user_name": posted_username["user_name"]})
-    print(user["_id"])
-    user_id = ObjectId(user["_id"])
-    mongo.db.logbase.update( { "data_type": "log" }, 
-    {       "logged_in": True,
-            "data_type": "log",
-            "user_id": ObjectId(user_id)
-    })
-    new_register = False
-    return redirect(url_for('user_recipes',
-                    user_id=user_id))
+    if mongo.db.users.find({"user_name": posted_username["user_name"]}).count() == 0:
+        new_register = False
+        login_exists = False
+        register_exists = False
+        return redirect(url_for('login_register',
+                        login_exists=login_exists,
+                        register_exists=register_exists,
+                        new_register=new_register))
+    else:
+        user = mongo.db.users.find_one({"user_name": posted_username["user_name"]})
+        new_register = False
+        login_exists = True
+        register_exists = False
+        #user = mongo.db.users.find_one({"user_name": posted_username["user_name"]})
+        print(user["_id"])
+        user_id = ObjectId(user["_id"])
+        mongo.db.logbase.update( { "data_type": "log" }, 
+        {       "logged_in": True,
+                "data_type": "log",
+                "user_id": ObjectId(user_id)
+        })
+        new_register = False
+        return redirect(url_for('user_recipes',
+                        user_id=user_id))
     
 @app.route('/user_recipes/<user_id>')
 def user_recipes(user_id):

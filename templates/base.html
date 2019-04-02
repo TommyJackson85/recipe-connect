@@ -13,6 +13,7 @@
     <header>
         <nav>
             <div class="nav-wrapper">
+                <a href="{{ url_for('index') }}" class="brand-logo">Recipe-Connect<i class='fa fa-plus-circle fa-2x logo_icon' aria-hidden='true'></i></a>
                 <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                 <!--header data, depending if page is for logged in users, logged out users, or both-->
                 {% block header %}
@@ -27,8 +28,7 @@
     <footer class="page-footer">
         <div class="footer-copyright">
             <div class="container">
-            © 2014 Copyright Text
-            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+            © 2019 Copyright: Tommy Jackson
             </div>
         </div>
     </footer>
@@ -50,7 +50,7 @@
             if(data.allergens.length != 0 ) {
                text += " - <em>Allergens: " + data.allergens.join(", ") + "</em> ";
             }
-            text += "<a id='delete-ingredient" + next_index + "' class='delete-ingredient" + next_index +" delete-data' value=" + next_index + "></a>";
+            text += "<a id='delete-ingredient" + next_index + "' class='delete-ingredient" + next_index +" delete_data' value=" + next_index + "></a>";
             $('.ingredient_item' + next_index).html(text);
             $('.delete-ingredient' + next_index).html("<i class='fa fa-minus-circle fa-2x' aria-hidden='true'></i>"); //adds font-awesome symbol
         }
@@ -81,8 +81,8 @@
         
         var addInstruction = function(data, index){
             var instruction = data + "  <a id='edit-instruction" + index + "' class='edit-instruction" 
-                + index + " edit-data' value=" + index + "></a> " + " <a id='delete-instruction" 
-                + index + "' class='delete-instruction" + index + " delete-data' value=" + index + "></a>";
+                + index + " edit_data' value=" + index + "></a> " + " <a id='delete-instruction" 
+                + index + "' class='delete-instruction" + index + " delete_data' value=" + index + "></a>";
             
             if(index >= $("#instruction-list").children().length){
                 //if it is new
@@ -116,16 +116,21 @@
                                     "<textarea id='edit_instruction_input' class='materialize-textarea'>" + instructions[e] + "</textarea>" +
                                     "<label class='active' for='edit_instruction'>Edit Instruction " + list_number + "</label>" + 
                                 "</div>" +
-                            "<div id='save_instruction_edit' class='save_instruction_edit col s4'>" +
-                                "<a class='waves-effect waves-light btn' id='save_instruction_edit"+e+"' value='"+e+"'>" +
-                                    "<i class='material-icons left'>edit</i>save instruction edit" +
-                                "</a>" +
-                            "</div>" + 
+                                "<div id='save_instruction_edit' class='save_instruction_edit col s10 push-s1 m8 push-m2 l6 push-l3'>" +
+                                    "<a class='waves-effect waves-light btn col s12' id='save_instruction_edit"+e+"' value='"+e+"'>" +
+                                        "<i class='material-icons left '>edit</i>save instruction edit" +
+                                    "</a>" +
+                                "</div>" + 
+                            "</div>" +
                         "</div>"
                     );
+                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" )
+                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" )
                     disableItemClicks = true;
                     $("#save_instruction_edit" + e ).on("click", function(t){
-                        console.log("save_instruction_edit is clicked!")
+                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" );
+                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" );
+                        console.log("save_instruction_edit is clicked!");
                         t = $(this).attr("value");//edit number
                         instructions[t] = $('#edit_instruction_input').val();
                         //addInstruction($('#edit_instruction_input').val(), t);
@@ -133,7 +138,6 @@
                         for (var j=0; j<instructions.length; j++) {
                             addInstruction(instructions[j], j);
                         }
-                        
                         $("#instruction_editing_section").remove();
                         accessInstructionDeletes();
                         accessInstructionEdits();
@@ -177,6 +181,13 @@
             $(".button-collapse").sideNav();
             //$(".dropdown-trigger").dropdown();
             $("#add_ingredient_data").on("click", function() {
+                if(document.getElementById("instruction_editing_section") !== null){
+                    //disables current instruction edit progress, and allows user to continue to delete and edit items
+                    $( "#instruction_editing_section" ).remove();
+                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" )
+                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" )
+                    disableItemClicks = false;
+                }
                 if ($('#ingredient_name').val().length == 0){
                     return alert("Ingredient Name field empty");
                 } 
@@ -222,6 +233,14 @@
                 //https://stackoverflow.com/questions/53694709/passing-javascript-array-in-python-flask
             }) 
             $("#add_instruction_data").on("click", function() {
+                if(document.getElementById("instruction_editing_section") !== null){
+                    //disables current instruction edit progress, and allows user to continue to delete and edit items
+                    $( "#instruction_editing_section" ).remove();
+                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" )
+                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" )
+                    disableItemClicks = false;
+                }
+                
                 if ($("#recipe_instruction_input").val().length == 0){
                     return alert("Instruction Input Empty!! Cant add to the list.")
                 };                    
@@ -240,8 +259,22 @@
                 accessInstructionEdits();
             })
 
-            $("#save_recipe").on("click", function(){
-                
+            $("#save_recipe").on("click", function(e){
+                if(document.getElementById("instruction_editing_section") !== null){
+                    //disables current instruction edit progress, and allows user to continue to delete and edit items
+                    $( "#instruction_editing_section" ).remove();
+                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" )
+                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" )
+                    disableItemClicks = false;
+                }
+                if ($('#recipe_name').val().length == 0){
+                    e.preventDefault();
+                    return alert("Recipe Name field empty! Cannot submit without it.");
+                } 
+                if ($('#recipe_cuisine').val().length == 0){
+                    e.preventDefault();
+                    return alert("Recipe Cuisine field empty! Cannot submit without it.");
+                }
                 var array_inputs = "<input id='recipe_instructions' name='recipe_instructions' type='text' value='" + JSON.stringify(instructions) + "'>" +
                 "<input id='recipe_ingredients' name='recipe_ingredients' type='text' value='" + JSON.stringify(ingredients) + "'>" +
                 "<input id='recipe_allergen_summary' name='recipe_allergen_summary' type='text' value='" + JSON.stringify(allergen_summary) + "'>";

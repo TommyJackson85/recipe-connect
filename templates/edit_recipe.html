@@ -13,89 +13,96 @@
 {% endblock header %}
 
 {% block content %}
-<h5 class="welcome_header">Welcome {{ user.user_name }}! Edit your recipe here:</h5>
+<h5 class="welcome_header">Welcome <i class="green_text">{{ user.user_name }}</i> ~ Edit your recipe here:</h5>
+<h6 class="red_text">* ~ <i>Input required</i></h6>
 <div class="row">
     <form id="form" class="col s12" method="POST" action="{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}">
         <div class="row">
-            <div class="input-field col s12">
-                <input id="recipe_name" name="recipe_name" type="text" value="{{ recipe_name }}">
-                <label for="icon_prefix">Name</label>
+            <div class="input-field col s12 l5 push-l1">
+                <input id="recipe_name" name="recipe_name" type="text">
+                <label for="icon_prefix">Name *</label>
             </div>
-            <div class="input-field col s12">
-                <input id="recipe_cuisine" name="recipe_cuisine" type="text" value="{{ recipe_cuisine }}">
-                <label for="icon_prefix">Cuisine</label>
+            <div class="input-field col s12 l5 push-l1">
+                <input id="recipe_cuisine" name="recipe_cuisine" type="text">
+                <label for="icon_prefix">Cuisine *</label>
             </div>
-            <div class="input-field col s12">
-                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text">{{ recipe_description }}</textarea>
+            <div class="input-field col s12 l10 push-l1">
+                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text"></textarea>
                 <label for="icon_telephone">Description</label>
             </div>
             <div id="array_inputs" class="input-field col s12 hidden">
             </div>
         </div>
-        <div class="ingredient_list_builder">
-            <div class="row">
-            <h6>Add Ingrediant</h6>
+        <div class="row">
+            <div class="ingredient_list_builder col s12 m10 push-m1">
+            
+            <h5>Ingredients adder</h5>
             <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
-            <div class='ingredients-box col s12'>
-                <h6 class="">Ingredients Box:</h6>
-                <div class="ingredients" id="ingredients">
-                </div>
+            
+            <!--<div class='ingredient-box col s12'>-->
+            <h6 class="">Ingredients Box:</h6>
+            <div class="ingredient-box" id="ingredients">
             </div>
+            <!--</div>-->
             <!--used by JavaScript-->
             <div class="input-field col s6">
                 <input id="ingredient_name" type="text">
-                <label for="icon_prefix">Ingredient</label>
+                <label for="icon_prefix">Ingredient *</label>
             </div>
             <div class="input-field col s6">
                 <input id="ingredient_amount" type="text">
-                <label for="icon_prefix">Amount</label>
+                <label for="icon_prefix">Amount *</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s6 m4">
                 <input id="ingredient_allergy1" type="text">
                 <label for="icon_prefix">Allergy</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s6 m4">
                 <input id="ingredient_allergy2" type="text">
                 <label for="icon_prefix">Allergy</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s6 m4">
                 <input id="ingredient_allergy3" type="text">
                 <label for="icon_prefix">Allergy</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s6 m4">
                 <input id="ingredient_allergy4" type="text">
                 <label for="icon_prefix">Allergy</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s6 m4">
                 <input id="ingredient_allergy5" type="text">
                 <label for="icon_prefix">Allergy</label>
             </div>
-            <div class="list-builder-button col s6">
-                <a class="waves-effect waves-light btn" id="add_ingredient_data"><i class="material-icons left">add</i>add to list</a>
+            <div class="ingredient_add_button col s10 push-s1 m8 push-m2 l6 push-l3">
+                <a class="waves-effect waves-light btn col s12" id="add_ingredient_data"><i class="material-icons left">add</i>add to box above</a>
             </div>
         </div>
         </div>
-        <div class="instruction_list_builder">
-            <h6>Add Instruction</h6>
+        <div class="row">
+            <div class="instruction_list_builder col s12 m10 push-m1">
+            <h5>Instructions list builder</h5>
+            <h6>Instructions List:</h6>
             <div class="instruction-box">
                 <ol id="instruction-list">
                 </ol>
             </div>
-            <div class="row">
-                <div id="instruction_adding_section">
-                    <div class="input-field col s12">
-                        <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
-                        <label for="icon_telephone">New Instruction</label>
-                    </div>
-                    <div id="instruction_add_button" class="instruction_add_button col s4">
-                        <a class="waves-effect waves-light btn" id="add_instruction_data"><i class="material-icons left">add</i>add to list</a>
-                    </div>
+            <div id="instruction_adding_section">
+                <div class="input-field col s12">
+                    <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
+                    <label for="icon_telephone">New Instruction *</label>
+                </div>
+                <div id="instruction_add_button" class="instruction_add_button col s10 push-s1 m8 push-m2 l6 push-l3">
+                    <a class="waves-effect waves-light btn col s12" id="add_instruction_data"><i class="material-icons left">add</i>add to box above</a>
                 </div>
             </div>
         </div>
-        <button id="save_recipe" class="btn waves-effect waves-light" type="submit" value="new" name="action">Submit
-            <i class="material-icons right">send</i>
-        </button>
+        </div>
+        <div class="row">
+            <button id="save_recipe" class="save_recipe btn waves-effect waves-light col s10 push-s1 m8 push-m2 l6 push-l3" type="submit" value="new" name="action">
+                <i class="material-icons right">send</i>
+                Submit New Recipe
+            </button>
+        </div>
     </form>
 </div>
 {% endblock content %}

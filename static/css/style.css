@@ -1,4 +1,25 @@
 /*colors*/
+/*green base: 1CC71C*/
+/*blue base: 2E4272*/
+/* red base: AA3939*/
+/* bright red: FF3E3E*/
+/* yellow base: AAAA39*/
+/* green/yellow base: 88E000*/
+/*bright blue base: 14B4B4*/
+/*seaweed green base 277064*/
+body{
+    background-color: #2E4172;
+    color: white;
+}
+
+nav, .page-footer, .footer-copyright { 
+    background-color: #548A00 !important;
+}
+
+.side-nav { 
+    background-color: #88E000;
+}
+
 .green_text {
     color: green;
 }
@@ -6,10 +27,78 @@
 .red_text {
     color: red;
 }
+.collapsible-header, .regular_box_item {
+     background-color: #550000;
+     color: #fff;
+}
+.regular_box_item {
+    border-bottom: 1px solid #ddd;
+}
+.collapsible-body {
+    background:  #4F618E;
+}
 
-body{
-    background-color: #0D4E49;/*dark green*/
-    color: white;
+.edit_data {
+    color: #4965A7;
+}
+.delete_data {
+    color: #FF3E3E;
+}
+.edit_data:hover, .delete_data:hover {
+    color: yellow;   
+}
+.edit_data_disabled, .edit_data_disabled:hover {
+    color: #4965A7 !important;
+    opacity: 0.5;
+}
+
+.delete_data_disabled, .delete_data_disabled:hover  {
+    color: #FF3E3E !important;
+    opacity: 0.5;
+}
+
+.edit_recipe {
+    background-color: #4965A7;
+}
+.delete_recipe {
+    background-color: #FF3E3E;
+}
+
+.ingredient_list_builder, .instruction_list_builder{
+    background: #4F618E;
+}
+.ingredient-box, .instruction-box {
+    border-width: 2px;
+    border-style: inset;
+    border-color: #7886AB;
+    border-radius: 3px;
+    background-color: #162855;
+}
+
+.ingredient_parent {
+    background: #AAAA39;
+    color: black;
+    border-radius: 5px;
+}
+
+.instruction_editing_section{
+    background-color: #88E000;/*yellow*/
+}
+.save_recipe {
+    background: #05A605;
+}
+.save_recipe:hover {
+    background: #3FD03F;
+}
+.submit_login, .submit_register, .ingredient_add_button a, .instruction_add_button a, .save_instruction_edit a {
+    background-color: #009898;
+}
+.submit_login:hover, .submit_register:hover, .ingredient_add_button a:hover, .instruction_add_button a:hover, .save_instruction_edit a:hover {
+    background-color: #35C0C0;
+}
+/*margins, paddings, other measurements*/
+
+body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
@@ -19,31 +108,31 @@ main {
     flex: 1 0 auto;
 }
 
+.logo_icon {
+    display: none !important;
+        /*margin-top: 14px;*/
+}
+
+.brand-logo {
+    display: none !important;
+}
+
+
 .regular_box_item {
     display: flex;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.5;
     padding: 1rem;
-    background-color: #fff;
-    color: black;
-    border-bottom: 1px solid #ddd;
-}
-.collapsible-header, .collapsible-body {
-    background:  #41837E;
 }
 
-.btn_small{
+/*.btn_small{
     height:24px;
     width:60px;
     line-height:24px;
     margin:5px 5px;
     padding:0 0.5em;
-}
-
-.delete-data {
-    color: red;
-}
+}*/
 
 .fa-minus-circle, .fa-pencil-square {
     margin: 0px 5px 0px 5px;
@@ -53,38 +142,31 @@ main {
     text-align: center;
 }
 
-.ingredient_list_builder {
-    background: #41837E;
-}
+/*.asterisk_note {
+    padding-left: 15px;
+}*/
 
-.instruction_list_builder{
-    background: #41837E;
-}
-
-.list-builder-button {
+/*.list-builder-button {
     margin-top: 20px;
+}*/
+
+.ingredient_add_button, .instruction_add_button, .save_instruction_edit {
+    margin: 5px 0px 20px 0px;
 }
 
-.ingredients, .instructions {
+.ingredient-box, .instruction-box {
     width: 100%;
     min-height: 60px;
     overflow:auto; 
     padding: 5px 2px;
     margin: 5px 0px;
-    border-style: solid;
-    border-color: red;
-    border-radius: 5px;
-    border-width: 5px;
 }
 
 .ingredient_parent {
     overflow:auto;
     display:inline-block;
-    background: #AA9E39;
-    color: black;
     margin:5px 5px 5px 5px;
     padding: 5px 5px 5px 5px;
-    border-radius: 5px;
 }
 .ingredient_parent h6 {
     display:inline-block;
@@ -94,5 +176,23 @@ main {
     margin: 0px 5px 5px 5px;
     padding-bottom: 5px;
     overflow:auto;
-    background-color: #105A6B;/*yellow*/
+}
+
+@media only screen and (min-width: 412px) {
+    /*.logo_icon {
+        display: none !important;
+    }*/
+    .brand-logo {
+        display: block !important;
+    }
+}
+@media only screen and (min-width: 601px) {
+    .logo_icon {
+        display: block !important;
+    }
+}
+@media only screen and (min-width: 992x) {
+    .brand-logo {
+        margin: 0px 0px 0px 5px !important;
+    }
 }
