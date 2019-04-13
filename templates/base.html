@@ -5,6 +5,14 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" type="text/css" />
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.css" type="text/css" />
+        <style>
+        #chart-here {
+            clear: left;
+        }
+        </style>
+
         <meta name="viewport" content="width=device-width">
         <meta charset="utf-8"/>
         <title>Recipe Connect +</title>
@@ -32,6 +40,11 @@
             </div>
         </div>
     </footer>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script type="text/javascript">
@@ -128,8 +141,12 @@
                     $( "a.delete_data" ).toggleClass( "delete_data_disabled" )
                     disableItemClicks = true;
                     $("#save_instruction_edit" + e ).on("click", function(t){
-                    $( "a.edit_data" ).toggleClass( "edit_data_disabled" );
-                    $( "a.delete_data" ).toggleClass( "delete_data_disabled" );
+                        if ( $("#edit_instruction_input").val() == 0){
+                            t.preventDefault();
+                            return alert("Edit instruction input was empty! Edit could not be performed.");
+                        }
+                        $( "a.edit_data" ).toggleClass( "edit_data_disabled" );
+                        $( "a.delete_data" ).toggleClass( "delete_data_disabled" );
                         console.log("save_instruction_edit is clicked!");
                         t = $(this).attr("value");//edit number
                         instructions[t] = $('#edit_instruction_input').val();

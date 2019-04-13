@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block header %}
+    {% if user_id == 'no_user' %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id=user_id, form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id=user_id, form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+    {% else %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+<h5 class="welcome_header">Current Recipe Statistics</h5>
+<div class="category_select row">
+    <div class="col s12">
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1">Cuisine</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='ingredients')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2">Ingredients</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='country')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1">Country</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='allergens')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2">Allergens</a>
+    </div>
+    <div class="col s12">
+        <h5 class="welcome_header red_text">{{ category.capitalize() }} Amount Summary Graph:</h5>
+        <p class="centered_paragraph red_text">
+            Retrieves the 5 most commonly found values of the {{ category }} category and shows their amount. Hover over each bar to reveal the value and its amount.
+        </p>
+    </div>
+    <div id="chart-here" class="bar_chart">
+    </div>
+    <!-- #https://docs.mongodb.com/manual/tutorial/aggregation-with-user-preference-data/-->
+    <div>
+    {% for variable in summary%}
+        {{ variable._id }}
+        {{ variable.number }}
+    {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+    <script> 
+        //ingredients = JSON.parse({{ summary|tojson|safe }});
+      /*  var transactionsData = JSON.parse({{ summary|tojson|safe }});
+        console.log(transactionsData);
+        var ndx = crossfilter(transactionsData);
+        var id_dim = ndx.dimension(dc.pluck('_id'));
+        var amount_found = id_dim.group().reduceSum(dc.pluck('number'));
+        dc.barChart('#chart-here')
+            .height(300)
+            .ordinalColors(['green'])
+            .margins({top: 10, right: 50, bottom: 30, left: 50})
+            .dimension(id_dim)
+            .group(amount_found)
+            .transitionDuration(300)
+            .x(d3.scale.ordinal())
+            .xUnits(dc.units.ordinal)
+            .xAxisLabel("{{ category }}")
+            .yAxis().ticks(4);
+            /*.xAxis().transform(rotate(-45deg))*/
+    
+        /*dc.renderAll();*/
+        // Default width
+        
+        var transactionsData = JSON.parse({{ summary|tojson|safe }});
+        console.log(transactionsData);
+        var ndx = crossfilter(transactionsData);
+        var id_dim = ndx.dimension(dc.pluck('_id'));
+        var amount_found = id_dim.group().reduceSum(dc.pluck('number'));
+
+        dc.barChart('#chart-here')
+            .height(300)
+            .x(d3.scale.ordinal())
+            .xUnits(dc.units.ordinal)
+            .dimension(id_dim)
+            .group(amount_found)
+            //.useViewBoxResizing(true)
+            .on('renderlet', function(dc) {
+                dc.selectAll('rect').on("click", function(d) {
+                    console.log("click!", d, this);
+                })
+            });
+            dc.renderAll();
+       
+        window.onresize = function() {
+          dc.renderAll();
+        }; //using this instead of of useViewBoxResizing (above), to keep the hight of chart consistant on screen size changes.
+   
+    </script>
+{% endblock scripts %}

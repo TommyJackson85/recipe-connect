@@ -3,10 +3,12 @@
 {% block header %}
 <ul id="nav-mobile" class="right hide-on-med-and-down">
     <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+    <li><a href="{{url_for('recipe_charts', user_id='no_user', category='cuisine')}}">Recipe Charts</a></li>
     <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
     <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+    <li><a href="{{url_for('recipe_charts', user_id='no_user', category='cuisine')}}">Recipe Charts</a></li>
     <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
 </ul>
 {% endblock header %}
@@ -33,8 +35,8 @@
                     <h6>Login Here!</h6>
                     <div class="input-field col s12">
                         <i class="material-icons prefix">textsms</i>
-                        <input type="text" id="user-login-input" name="user_name" class="user-login">
-                        <label for="user-login-input">Login Username</label>
+                        <input type="text" id="user_login_input" name="user_name" class="user_login">
+                        <label for="user_login_input">Login Username</label>
                     </div>
                     <button id="submit_login" class="submit_login btn waves-effect waves-light" type="submit" value="new" name="action">Login
                         <i class="material-icons right">send</i></i>
@@ -52,12 +54,12 @@
                 <h6>Don't have an account? Register here!</h6>
                 <div class="input-field col s12">
                     <i class="material-icons prefix">textsms</i>
-                    <input type="text" id="user_name" name="user_name">
+                    <input type="text" id="user_register_name" name="user_name">
                     <label for="icon_prefix">New Username</label>
                </div>
                 <div class="input-field col s12">
                     <i class="material-icons prefix">textsms</i>
-                    <input type="text" id="user_country" name="user_country">
+                    <input type="text" id="user_register_country" name="user_country">
                     <label for="icon_prefix">Your country of origin</label>
                 </div>
                 <button id="submit_register" class="submit_register btn waves-effect waves-light" type="submit" name="action">Register
@@ -70,4 +72,22 @@
 </div>
 {% endblock content %}
 {% block scripts %}
+<script>
+    $("#submit_register").on("click", function(e){
+        if ($('#user_register_name').val().length == 0){
+            e.preventDefault();
+            return alert("Registration Name field empty! Cannot submit without it.");
+        }
+        if ($('#user_register_country').val().length == 0){
+            e.preventDefault();
+            return alert("Registration Country field empty! Cannot submit without it.");
+        } 
+    })
+    $("#submit_login").on("click", function(e){
+        if ($('#user_login_input').val().length == 0){
+            e.preventDefault();
+            return alert("Login Name field empty! Cannot submit without it.");
+        }
+    })
+</script>
 {% endblock scripts %}

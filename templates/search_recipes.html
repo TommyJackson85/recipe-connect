@@ -3,21 +3,25 @@
     {% if user_id == 'no_user' %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
             <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
     {% else %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
@@ -32,15 +36,15 @@
         <div class="row">
             <div class="input-field col s12 m4">
               <input id="recipe_cuisine" type="text" class="recipe_cuisine" name="recipe_cuisine" value="{{ searchbase.cuisine }}">
-              <label for="recipe_cuisine">Cuisine</label></label>
+              <label for="recipe_cuisine">Cuisine:</label></label>
             </div>
             <div class="input-field col s12 m4">
               <input id="recipe_ingredient" type="text" class="recipe_ingredient" name="recipe_ingredient" value="{{ searchbase.ingredient }}">
-              <label for="recipe_ingredient">Ingredient</label></label>
+              <label for="recipe_ingredient">Ingredient:</label></label>
             </div>
             <div class="input-field col s12 m4">
               <input id="recipe_allergen" type="text" class="recipe_allergen" name="recipe_allergen" value="{{ searchbase.allergen }}">
-              <label for="recipe_allergen">Allergen</label></label>
+              <label for="recipe_allergen">Without Allergen:</label></label>
             </div>
             <button id="search_recipes" class="search_recipes btn waves-effect waves-light col s6 push-s3 l4 push-l4" type="submit" value="new" name="action">
                 Search Recipes
@@ -50,6 +54,32 @@
 </div>
 <div class="row">
 <div class="col s12 l10 push-l1 xl8 push-xl2">
+    
+   {% if recipes_found %}
+        {% set new_recipes = [] %}
+        {% set cuisine_types = [] %}
+        {% set countries = [] %}
+        {% for recipe_count in recipes %}
+            {% if recipe_count.recipe_cuisine not in cuisine_types %}
+                {% set cuisine_types = cuisine_types.append(recipe_count.recipe_cuisine) %}
+                {{ appended }}
+            {% endif %}
+            {% if recipe_count.user_details.country not in countries %}
+                {% set countries = countries.append(recipe_count.user_details.country) %}
+            {% endif %}
+            {% if recipe_count.last_modified >= seven_days_before %}
+                {% set new_recipes = new_recipes.append(1) %}
+            {% endif %}
+        {% endfor %}
+        <h5>No. New Recipes: <em class="green_text">{{ new_recipes|length }}</em> | No. Old Recipes: <em class="green_text">{{ recipes|length - new_recipes|length }}</em> | No. Countries: <em class="green_text">{{ countries|length }}</em> </h5> 
+        <h5>Cuisines Found: 
+            {% for ct in cuisine_types %}
+                <em class="green_text">{{ ct }}</em>
+                {{ "," if not loop.last }}
+            {% endfor%}
+        </h5>
+    {% endif %}
+    <!--https://stackoverflow.com/questions/42928348/print-count-before-and-after-jinja-loop-->
     <ul class="collapsible" data-collapsible="accordion">
     {% if recipes_found %}
         {% for recipe in recipes %}
@@ -58,7 +88,11 @@
                 <i class="material-icons">expand_more</i>
                 <div class="row">
                     <div class="col s12 m8">
-                        <h5>{{ recipe.recipe_name }} </h5>
+                        <h5>{{ recipe.recipe_name }}</h5>
+                        {% if recipe.last_modified >= seven_days_before %}
+                            <h5 class="red_text">New!</h5>
+                        {% endif %}
+                        
                         <h6>Cuisine: {{ recipe.recipe_cuisine }} - Last Updated: {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }} 
                         (
                         {% if recipe.last_modified.hour < 10 %}

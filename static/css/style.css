@@ -12,6 +12,13 @@ body{
     color: white;
 }
 
+/*attempted background image*/
+/*nav{
+     background-image: url("./images/header_background_food.jpg");*/
+     /* 'various spices and herbs' image from https://www.freewebheaders.com/food-beverage/food-headers/*/
+ /*    background-color: #548A00;
+}*/
+
 nav, .page-footer, .footer-copyright { 
     background-color: #548A00 !important;
 }
@@ -95,10 +102,10 @@ nav, .page-footer, .footer-copyright {
 .save_recipe:hover, .view_recipe:hover, .upvote_recipe:hover {
     background: #3FD03F;
 }
-.submit_login, .submit_register, .ingredient_add_button a, .instruction_add_button a, .save_instruction_edit a, .search_recipes {
+.submit_login, .submit_register, .ingredient_add_button a, .instruction_add_button a, .save_instruction_edit a, .search_recipes, .category_select .btn.btn_small {
     background-color: #009898;
 }
-.submit_login:hover, .submit_register:hover, .ingredient_add_button a:hover, .instruction_add_button a:hover, .save_instruction_edit a:hover, .search_recipes:hover {
+.submit_login:hover, .submit_register:hover, .ingredient_add_button a:hover, .instruction_add_button a:hover, .save_instruction_edit a:hover, .search_recipes:hover, .category_select .btn.btn_small:hover {
     background-color: #35C0C0;
 }
 /*margins, paddings, other measurements*/
@@ -122,7 +129,6 @@ main {
     display: none !important;
 }
 
-
 .regular_box_item {
     display: flex;
     cursor: pointer;
@@ -143,7 +149,7 @@ main {
     margin: 0px 5px 0px 5px;
 }
 
-.welcome_header {
+.welcome_header, .centered_paragraph {
     text-align: center;
 }
 
@@ -183,21 +189,62 @@ main {
     display:inline-block;
 }
 
+/* gggggggg */
+
+.category_select .btn.btn_small {
+    margin-bottom: 20px;
+}
+
+ .bar-tooltip {
+    display:none;
+}
+
+.bar-tooltip:click {
+    display:block;
+    position:fixed;
+    overflow:hidden;
+}
+
 .instruction_editing_section{
     margin: 0px 5px 5px 5px;
     padding-bottom: 5px;
     overflow:auto;
 }
 
+.bar_chart {
+    width:90%;
+    height: 100%;
+    padding: 5px 5px 5px 30px;
+}
+
+.axis.x {
+    z-index: -1 !important;
+    overflow: hidden;
+}
+.axis.x .tick text {
+    fill: red !important;
+    transform: rotate(-45deg) !important;
+    height: auto !important;
+     z-index: 1 !important;
+}
+.chart {
+    pointer-events: none;
+}
+
+.dc-chart {
+    fill: red;
+    stroke: none;
+}
+
 @media only screen and (min-width: 412px) {
-    /*.logo_icon {
+  /*  .logo_icon {
         display: none !important;
     }*/
+}
+@media only screen and (min-width: 601px) {
     .brand-logo {
         display: block !important;
     }
-}
-@media only screen and (min-width: 601px) {
     .logo_icon {
         display: block !important;
     }

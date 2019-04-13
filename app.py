@@ -1,6 +1,6 @@
 import os, json, ast, datetime
 from flask import Flask, render_template, redirect, request, url_for, jsonify
-
+from datetime import timedelta
 from bson import json_util
 from bson.son import SON
 from bson.objectid import ObjectId
@@ -10,7 +10,8 @@ print(sys.path)
 
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = 'recipe-manager'
-app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
+app.config["MONGO_URI"] = 'mongodb://bigtom98:funnybone98@ds131997.mlab.com:31997/recipe-manager'
+#app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
 
 
 mongo = PyMongo(app)   
@@ -288,17 +289,20 @@ def search_recipes(user_id, form_requested):
         if len(searchbase["allergen"]) > 0:
             query_object["recipe_allergen_summary"] = { "$ne": searchbase["allergen"]  }
     
-    print(query_object)   
     if mongo.db.recipes.find(query_object).count() > 0:
-        print(mongo.db.recipes.find(query_object).limit(20).count())
-        print(query_object)  
         recipes_found = True
+        #recipes=mongo.db.recipes.find(query_object).sort([("recipe_upvotes", -1), ("recipe_views", -1), ("last_modified", -1)] ).limit(20)
+        seven_days_before = datetime.datetime.now() - timedelta(days=3)
+        print(mongo.db.recipes.find(query_object).count())
         recipes=mongo.db.recipes.find(query_object).sort([("recipe_upvotes", -1), ("recipe_views", -1), ("last_modified", -1)] ).limit(20)
+        #print(list(recipes));
+        #list(recipes).count({})
         return render_template("search_recipes.html",
+                                seven_days_before = datetime.datetime.now() - timedelta(days=3),
                                 user_id=user_id,
                                 recipes_found=recipes_found,
                                 searchbase = mongo.db.searchbase.find_one({"data_type": "search"}),
-                                recipes=recipes)
+                                recipes=list(recipes))
     else:
         recipes_found = False
         return render_template("search_recipes.html",
@@ -334,8 +338,39 @@ def recipe(recipe_id, user_id, upvoting):
                                 user = mongo.db.users.find_one({ "_id": ObjectId(user_id) }),
                                 recipe = mongo.db.recipes.find_one({ "_id": ObjectId(recipe_id) })
                             )
-    
 
+#used this mongodb manual for reference when designing my aggregation query for the recipe_charts page
+#https://docs.mongodb.com/manual/tutorial/aggregation-with-user-preference-data/
+@app.route('/recipe_charts/<user_id>/<category>', methods=['POST', 'GET'])                                
+def recipe_charts(user_id, category):
+    query = []
+    if category == "allergens":
+        query.append({ "$unwind" : "$recipe_allergen_summary" })
+        query.append({ "$group" : { "_id" : "$recipe_allergen_summary", "number" : { "$sum" : 1 } } })
+        
+    elif category == "cuisine":
+        query.append({ "$group" : { "_id" : "$recipe_cuisine", "number" : { "$sum" : 1 } } })
+    
+    elif category == "ingredients":
+        query.append({ "$unwind" : "$recipe_ingredients" })
+        query.append({ "$group" : { "_id" : "$recipe_ingredients.ingredient", "number" : { "$sum" : 1 } } })
+    
+    elif category == "country":
+         query.append({ "$group" : { "_id" : "$user_details.country", "number" : { "$sum" : 1 } } })
+    
+    #all categories require the following
+    query.append({ "$sort" : { "number" : -1 } })
+    query.append({ "$limit" : 5 })
+    
+    #retrieving and listing data and turning it into a string
+    query_sum = mongo.db.recipes.aggregate(query)
+    summary = json.dumps(list(query_sum))
+    print(summary)
+    
+    return render_template("recipe_charts.html",
+                            user_id=user_id,
+                            summary=summary,
+                            category=category)
+    
 if __name__ == '__main__':      
     app.run(host=os.getenv('IP'), port=int(os.getenv('PORT')), debug=True)
-        
