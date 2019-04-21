@@ -3,21 +3,27 @@
     {% if user_id == 'no_user' %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
             <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
     {% else %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
@@ -29,6 +35,12 @@
     <div class="col s12 l10 push-l1 xl8 push-xl2">
         <h3 class="welcome_header red_text">{{ recipe.recipe_name}}</h3>
     </div>
+    {% if recipe.recipe_image|length > 0 %}
+    <div class="center-align col s12 m10 push-m1 l8 push-l2">
+        <img src="{{ recipe.recipe_image }}" alt="" onerror="this.src='http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png'" class=" responsive-img">
+    </div>
+    
+    {% endif %}
     <div class="col s12 m5 push-m1">
         <h5><strong>Cuisine:</strong> {{ recipe.recipe_cuisine }}</h5> 
         <h5><strong>Last Updated:</strong> {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }} ( {{ recipe.last_modified.hour }}:{{ recipe.last_modified.minute }} )</h5>
@@ -46,10 +58,12 @@
         {% endif %}
     </div>
      <div class="col s12 m5 push-m1">
+         <h5><strong>Created by: </strong> <em class="green_text">{{recipe.user_details.name}}</em></h5>
+         <h5><strong>From: </strong><em class="green_text">{{recipe.user_details.country}}</em></h5>
          <h5><strong>Description:</strong></h5>
          <p>{{ recipe.recipe_description }}</p> 
      </div>
-    <div class="col s10 push-s1">
+    <div class="col s12 m10 push-m1">
         <h5><strong>Ingredients Required:</strong></h5>
         {% for ingredient in recipe.recipe_ingredients %}
             <div class="expandable_box ingredient_parent">
@@ -70,7 +84,7 @@
         </div>
         {% endfor %}
     </div>
-    <div class="col s10 push-s1">
+    <div class="col s12 m10 push-m1">
         <h5><strong>List of instructions:</strong></h5>
         <ol>
             {% for instruction in recipe.recipe_instructions %}
@@ -78,7 +92,7 @@
             {% endfor %}   
         </ol>
     </div>
-    <div class="col s12">li>
+    <div class="col s12">
         <a href="{{ url_for('search_recipes', user_id=user_id, form_requested=False) }}" class="btn waves-effect waves-light search_recipes col s10 push-s1 m6 push-m3 l4 push-l4" type="submit" name="action">
             Return To Search Recipes
         </a>

@@ -1,5 +1,6 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block header %}
+<!--for materialise nav bar-->
 <ul id="nav-mobile" class="right hide-on-med-and-down">
     <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
@@ -8,6 +9,7 @@
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
     <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
     <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
@@ -19,70 +21,80 @@
 {% block content %}
 <h5 class="welcome_header">Welcome <i class="green_text">{{ user.user_name }}</i> ~ Edit your recipe here:</h5>
 <div class="row">
+    <!--materialise.js forms with some regular html css classes (red_text)-->
     <form id="form" class="col s12" method="POST" action="{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}">
         <h6 class="red_text col s12 l10 push-l1">* ~ <i>Input required</i></h6>
         <div class="row">
+            <!--inputs used with Flask's request function-->
             <div class="input-field col s12 l5 push-l1">
                 <input id="recipe_name" name="recipe_name" type="text" value="{{ recipe_name }}">
-                <label for="icon_prefix">Name *</label>
+                <label>Name *</label>
             </div>
             <div class="input-field col s12 l5 push-l1">
                 <input id="recipe_cuisine" name="recipe_cuisine" type="text" value="{{ recipe_cuisine }}">
-                <label for="icon_prefix">Cuisine *</label>
+                <label>Cuisine *</label>
             </div>
             <div class="input-field col s12 l10 push-l1">
-                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea" type="text">{{ recipe_description }}</textarea>
-                <label for="icon_telephone">Description</label>
+                <textarea id="recipe_description" name="recipe_description" class="materialize-textarea">{{ recipe_description }}</textarea>
+                <label>Description</label>
+            </div>
+            <div class="input-field col s12 l7 push-l1">
+                <input id="recipe_image" name="recipe_image" type="text" value="{{ recipe_image }}">
+                <label>Image URL (a small square image recommended)</label>
             </div>
             <div id="array_inputs" class="input-field col s12 hidden">
+                <!--hidden inputs containing ingredient and instruction values, are appended here by JavaScript upon clicking Submit below-->
             </div>
         </div>
+        
+        <!--for ingredient list builder and instruction list builder: all interactive functionality created by
+        JavaScript and jQuery below in script element and script element in base.html file-->
         <div class="row">
+            <!--mix of materialise.js classes, ids and my own-->
             <div class="ingredient_list_builder col s12 m10 push-m1">
-            <h5>Ingredients adder</h5>
-            <!--#ingredients children recieved from JavaScript below and from Base file JavaScript-->
-            
-            <!--<div class='ingredient-box col s12'>-->
-            <h6 class="">Ingredients Box:</h6>
-            <div class="ingredient-box" id="ingredients">
+                <h5>Ingredients adder</h5>
+                <!--regular html-->
+                <h6 class="">Ingredients Box:</h6>
+                <div class="ingredient-box" id="ingredients">
+                    <!--collects created ingredients-->
+                </div>
+                <div class="input-field col s6">
+                    <input id="ingredient_name" type="text">
+                    <label>Ingredient *</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="ingredient_amount" type="text">
+                    <label>Amount *</label>
+                </div>
+                <div class="input-field col s6 m4">
+                    <input id="ingredient_allergy1" type="text">
+                    <label>Allergy</label>
+                </div>
+                <div class="input-field col s6 m4">
+                    <input id="ingredient_allergy2" type="text">
+                    <label>Allergy</label>
+                </div>
+                <div class="input-field col s6 m4">
+                    <input id="ingredient_allergy3" type="text">
+                    <label>Allergy</label>
+                </div>
+                <div class="input-field col s6 m4">
+                    <input id="ingredient_allergy4" type="text">
+                    <label>Allergy</label>
+                </div>
+                <div class="input-field col s6 m4">
+                    <input id="ingredient_allergy5" type="text">
+                    <label>Allergy</label>
+                </div>
+                <!--button send input values to JavaScript-->
+                <div class="ingredient_add_button col s10 push-s1 m8 push-m2 l6 push-l3">
+                    <a class="waves-effect waves-light btn col s12" id="add_ingredient_data"><i class="material-icons left">add</i>add to box above</a>
+                </div>
             </div>
-            <!--</div>-->
-            <!--used by JavaScript-->
-            <div class="input-field col s6">
-                <input id="ingredient_name" type="text">
-                <label for="icon_prefix">Ingredient *</label>
-            </div>
-            <div class="input-field col s6">
-                <input id="ingredient_amount" type="text">
-                <label for="icon_prefix">Amount *</label>
-            </div>
-            <div class="input-field col s6 m4">
-                <input id="ingredient_allergy1" type="text">
-                <label for="icon_prefix">Allergy</label>
-            </div>
-            <div class="input-field col s6 m4">
-                <input id="ingredient_allergy2" type="text">
-                <label for="icon_prefix">Allergy</label>
-            </div>
-            <div class="input-field col s6 m4">
-                <input id="ingredient_allergy3" type="text">
-                <label for="icon_prefix">Allergy</label>
-            </div>
-            <div class="input-field col s6 m4">
-                <input id="ingredient_allergy4" type="text">
-                <label for="icon_prefix">Allergy</label>
-            </div>
-            <div class="input-field col s6 m4">
-                <input id="ingredient_allergy5" type="text">
-                <label for="icon_prefix">Allergy</label>
-            </div>
-            <div class="ingredient_add_button col s10 push-s1 m8 push-m2 l6 push-l3">
-                <a class="waves-effect waves-light btn col s12" id="add_ingredient_data"><i class="material-icons left">add</i>add to box above</a>
-            </div>
-        </div>
         </div>
         <div class="row">
             <div class="instruction_list_builder col s12 m10 push-m1">
+            <!--regular HTML-->
             <h5>Instructions list builder</h5>
             <h6>Instructions List:</h6>
             <div class="instruction-box">
@@ -90,10 +102,12 @@
                 </ol>
             </div>
             <div id="instruction_adding_section">
+                <!--materialise code-->
                 <div class="input-field col s12">
                     <textarea id="recipe_instruction_input" class="materialize-textarea"></textarea>
                     <label for="icon_telephone">New Instruction *</label>
                 </div>
+                <!--button sends textarea value to JavaScript-->
                 <div id="instruction_add_button" class="instruction_add_button col s10 push-s1 m8 push-m2 l6 push-l3">
                     <a class="waves-effect waves-light btn col s12" id="add_instruction_data"><i class="material-icons left">add</i>add to box above</a>
                 </div>
@@ -105,6 +119,8 @@
                 <i class="material-icons right">send</i>
                 Submit Recipe Edit
             </button>
+            <!--Buttons first attachess hidden inputs with values contining ingredient and instruction data.
+            Then Flask requests all input values, and redirects the page if succesful-->
         </div>
     </form>
 </div>
@@ -113,26 +129,26 @@
 {% block scripts %}
 <script type="text/javascript">
         //Arrays for list builders    
-       // ingredients = [];
-        //instructions= [];
-        
         /*variables for edit_recipe*/
         var AJAX_url = "{{ url_for('update_recipe', user_id=user_id, recipe_id=recipe_id) }}";
         var AJAX_method = "POST";
             //Arrays for list builders    
         $( document ).ready(function() {
-            //receives current ingredients and instructions data from Python
-            
+            //receives last updated ingredients and instructions data from Python
+            //Might re work on the JSON parses
             ingredients = JSON.parse({{ ingredients|tojson|safe }});
             allergen_summary = [];//starts on a clean slate
             instructions = JSON.parse({{ instructions|tojson|safe }});
+            
+            //re adds ingredients and instructions to DOM
             for (var i=0; i<ingredients.length; i++) {
                 addIngredient(ingredients[i], i);
             }
             for (var i=0; i<instructions.length; i++) {
                 addInstruction(instructions[i], i);
             }
-            //access ingredient and instruction button functions
+            
+            //accesses individual ingredient and instruction button functions
             accessIngredientDeletes();
             accessInstructionDeletes();
             accessInstructionEdits();

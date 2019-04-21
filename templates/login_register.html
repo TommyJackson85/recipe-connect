@@ -4,12 +4,13 @@
 <ul id="nav-mobile" class="right hide-on-med-and-down">
     <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id='no_user', category='cuisine')}}">Recipe Charts</a></li>
-    <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+    <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}" class="current_page">Login/Register</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
     <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id='no_user', category='cuisine')}}">Recipe Charts</a></li>
-    <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+    <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}" class="current_page">Login/Register</a></li>
 </ul>
 {% endblock header %}
 
@@ -34,12 +35,12 @@
                 <div class="col s12 l6 push-l3">
                     <h6>Login Here!</h6>
                     <div class="input-field col s12">
-                        <i class="material-icons prefix">textsms</i>
+                        <!--<i class="material-icons prefix">textsms</i>-->
                         <input type="text" id="user_login_input" name="user_name" class="user_login">
                         <label for="user_login_input">Login Username</label>
                     </div>
                     <button id="submit_login" class="submit_login btn waves-effect waves-light" type="submit" value="new" name="action">Login
-                        <i class="material-icons right">send</i></i>
+                        <i class="material-icons right">send</i>
                     </button>
                 </div>
             </div>
@@ -53,14 +54,14 @@
             <div class="col s12 l6 push-l3">
                 <h6>Don't have an account? Register here!</h6>
                 <div class="input-field col s12">
-                    <i class="material-icons prefix">textsms</i>
+                    <!--<i class="material-icons prefix">textsms</i>-->
                     <input type="text" id="user_register_name" name="user_name">
-                    <label for="icon_prefix">New Username</label>
+                    <label>New Username</label>
                </div>
                 <div class="input-field col s12">
-                    <i class="material-icons prefix">textsms</i>
+                    <!--<i class="material-icons prefix">textsms</i>-->
                     <input type="text" id="user_register_country" name="user_country">
-                    <label for="icon_prefix">Your country of origin</label>
+                    <label>Your country of origin</label>
                 </div>
                 <button id="submit_register" class="submit_register btn waves-effect waves-light" type="submit" name="action">Register
                     <i class="material-icons right">send</i>

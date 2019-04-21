@@ -2,25 +2,27 @@
 {% block header %}
     {% if user_id == 'no_user' %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}" class="current_page">Find Recipe</a></li>
             <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
-            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}" class="current_page">Find Recipe</a></li>
             <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
     {% else %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}" class="current_page">Find Recipe</a></li>
             <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
-            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}" class="current_page">Find Recipe</a></li>
             <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
@@ -30,21 +32,20 @@
 {% endblock header %}
 {% block content %}
 <div class="row">
-    <form id="form"class="col s12 l10 push-l1" method="POST" action="{{ url_for('search_recipes', user_id=user_id, form_requested=True) }}">
-        
+    <form id="form" class="col s12 l10 push-l1" method="POST" action="{{ url_for('search_recipes', user_id=user_id, form_requested=True) }}">
         <h5 class="welcome_header col s12 l10 push-l1">Search recipes here!</h5>
         <div class="row">
             <div class="input-field col s12 m4">
               <input id="recipe_cuisine" type="text" class="recipe_cuisine" name="recipe_cuisine" value="{{ searchbase.cuisine }}">
-              <label for="recipe_cuisine">Cuisine:</label></label>
+              <label for="recipe_cuisine">Cuisine:</label>
             </div>
             <div class="input-field col s12 m4">
               <input id="recipe_ingredient" type="text" class="recipe_ingredient" name="recipe_ingredient" value="{{ searchbase.ingredient }}">
-              <label for="recipe_ingredient">Ingredient:</label></label>
+              <label for="recipe_ingredient">Ingredient:</label>
             </div>
             <div class="input-field col s12 m4">
               <input id="recipe_allergen" type="text" class="recipe_allergen" name="recipe_allergen" value="{{ searchbase.allergen }}">
-              <label for="recipe_allergen">Without Allergen:</label></label>
+              <label for="recipe_allergen">Without Allergen:</label>
             </div>
             <button id="search_recipes" class="search_recipes btn waves-effect waves-light col s6 push-s3 l4 push-l4" type="submit" value="new" name="action">
                 Search Recipes
@@ -53,8 +54,8 @@
     </form>
 </div>
 <div class="row">
-<div class="col s12 l10 push-l1 xl8 push-xl2">
-    
+    <h5 class="welcome_header col s12 l10 push-l1">Click each recipe box to display summary!</h5>
+    <div class="col s12 l10 push-l1 xl8 push-xl2">
    {% if recipes_found %}
         {% set new_recipes = [] %}
         {% set cuisine_types = [] %}
@@ -71,13 +72,13 @@
                 {% set new_recipes = new_recipes.append(1) %}
             {% endif %}
         {% endfor %}
-        <h5>No. New Recipes: <em class="green_text">{{ new_recipes|length }}</em> | No. Old Recipes: <em class="green_text">{{ recipes|length - new_recipes|length }}</em> | No. Countries: <em class="green_text">{{ countries|length }}</em> </h5> 
-        <h5>Cuisines Found: 
+        <h6>No. New Recipes: <em class="green_text">{{ new_recipes|length }}</em> | No. Old Recipes: <em class="green_text">{{ recipes|length - new_recipes|length }}</em> | No. Countries: <em class="green_text">{{ countries|length }}</em> </h6> 
+        <h6>Cuisines Found: 
             {% for ct in cuisine_types %}
                 <em class="green_text">{{ ct }}</em>
                 {{ "," if not loop.last }}
             {% endfor%}
-        </h5>
+        </h6>
     {% endif %}
     <!--https://stackoverflow.com/questions/42928348/print-count-before-and-after-jinja-loop-->
     <ul class="collapsible" data-collapsible="accordion">
@@ -111,45 +112,39 @@
                         <h6>Upvotes: <em class="green_text">{{ recipe.recipe_upvotes }}</em> | Views: <em class="green_text">{{ recipe.recipe_views }}</em></h6>
                     </div>
                     <div class="col s12 m4">
-                        {% if user_id == recipe.user_id  %}
-                            <h6>Created by You! Well done!</h6>
-                        {% else %}
-                            <h6><strong>Created by: </strong> <em class="green_text">{{recipe.user_details.name}}</em>
-                            </h6><h6><strong>From: </strong><em class="green_text">{{recipe.user_details.country}}</em></h6>
-                        {% endif %}
+                        <h6><strong>Created by: </strong> <em class="green_text">{{recipe.user_details.name}}</em>
+                        </h6><h6><strong>From: </strong><em class="green_text">{{recipe.user_details.country}}</em></h6>
                         <a href="{{ url_for('recipe', recipe_id=recipe._id, user_id=user_id, upvoting=False ) }}" class="view_recipe waves-effect wavers-light btn btn_medium">View Recipe</a>
-                    </div>
-                        
-                    <div class="col s12 m6">
-                        {% if recipe.recipe_ingredients|length > 0 %}
-                            <p><strong>Ingredients:</strong></p>
-                        {% endif %}
-                        {% for ingredient in recipe.recipe_ingredients %}
-                        <div class="expandable_box ingredient_parent">
-                            <h6 class="ingredient_item">
-                                <strong>{{ ingredient.ingredient }}</strong>
-                            </h6>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="col s12 m6">
-                    {% if recipe.recipe_allergen_summary|length > 0 %}
-                    <p><strong>Allergens:</strong></p>
-                    {% endif %}
-                    {% for allergen in recipe.recipe_allergen_summary %}
-                    <div class="expandable_box allergen_parent">
-                        <h6 class="ingredient_item">
-                            <strong>{{ allergen }}</strong>
-                        </h6>
-                    </div>
-                    {% endfor %}
                     </div>
                 </div>
             </div>
             <div class="collapsible-body">
-                <span>
-                    <p class=""><strong>Description:</strong> {{ recipe.recipe_description }}</p>
-                </span>
+                {% if recipe.recipe_image|length > 0 %}
+                <div class="center-align col s12">
+                    <img src="{{ recipe.recipe_image }}" alt="" onerror="this.src='http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png'" class="circle_small">
+                </div>
+                {% endif %}             
+                <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
+                {% if recipe.recipe_ingredients|length > 0 %}
+                <p><strong>Ingredients:</strong></p>
+                {% endif %}
+                {% for ingredient in recipe.recipe_ingredients %}
+                <div class="expandable_box ingredient_parent">
+                        <h6 class="ingredient_item">
+                            <strong>{{ ingredient.ingredient }}</strong>
+                        </h6>
+                    </div>
+                {% endfor %}                    
+                {% if recipe.recipe_allergen_summary|length > 0 %}
+                <p><strong>Allergens:</strong></p>
+                {% endif %}
+                {% for allergen in recipe.recipe_allergen_summary %}
+                <div class="expandable_box allergen_parent">
+                        <h6 class="ingredient_item">
+                            <strong>{{ allergen }}</strong>
+                        </h6>
+                    </div>
+                {% endfor %}
             </div>
         </li>
         {% endfor %}
@@ -158,7 +153,6 @@
         <div class='regular_box_item'>
             <div class="recipe_header">
                 <h6>No recipes found! Please try another search above!</h6>
-                
             </div>
         </div>
     </li>

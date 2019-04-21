@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block header %}
+    {% if user_id == 'no_user' %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
+            <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
+        </ul>
+    {% else %}
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
+            <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+            <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
+            <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
+        </ul>
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+<div class="row">
+    <h4 class="center-align"><i class="fa fa-cutlery" aria-hidden="true"></i>  Recipe-Connect</h4>
+    <div class="center-align col s12">
+        <div class="home_page_image">
+            <img src="https://media-cdn.tripadvisor.com/media/photo-s/13/2e/10/26/israeli-food.jpg" alt="">
+            <!--Image originally from this link:
+            https://www.tripadvisor.ie/Restaurant_Review-g293984-d2039127-Reviews-Falafel_Gabay-Tel_Aviv_Tel_Aviv_District.html
+            Image for Falafel Gabay restaurant @ Bograshov 25, Tel Aviv Israel, and for trip advisor page
+            -->
+        </div>
+    </div>
+    {% if user_id == 'no_user' %}
+        <h5 class="center-align">Login or regigister here:</h5>
+        <a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}"  class="login_register_link waves-effect wavers-light btn btn_large col s10 push-s1 m6 push-m3 l4 push-l4">Login/Register</a>
+    {% else %}
+        <h5 class="center-align">Welcome <em class="green_text">{{ user_name }}</em>~revisit your recipe list:</h5>
+        <a href="{{url_for('user_recipes', user_id=user_id)}}"  class="user_recipes_link waves-effect wavers-light btn btn_large col s10 push-s1 m6 push-m3 l4 push-l4">Your Recipes</a>
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

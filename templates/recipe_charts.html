@@ -3,25 +3,27 @@
     {% if user_id == 'no_user' %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id=user_id, form_requested=False)}}">Find Recipe</a></li>
-            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="current_page">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
             <li><a href="{{url_for('search_recipes', user_id=user_id, form_requested=False)}}">Find Recipe</a></li>
-            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="current_page">Recipe Charts</a></li>
             <li><a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}">Login/Register</a></li>
         </ul>
     {% else %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
-            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="current_page">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
+            <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
             <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
-            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
+            <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="current_page">Recipe Charts</a></li>
             <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
             <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
             <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
@@ -33,20 +35,23 @@
 <h5 class="welcome_header">Current Recipe Statistics</h5>
 <div class="category_select row">
     <div class="col s12">
-        <a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1">Cuisine</a>
-        <a href="{{url_for('recipe_charts', user_id=user_id, category='ingredients')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2">Ingredients</a>
-        <a href="{{url_for('recipe_charts', user_id=user_id, category='country')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1">Country</a>
-        <a href="{{url_for('recipe_charts', user_id=user_id, category='allergens')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2">Allergens</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1 m4 push-m1">Cuisine</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='ingredients')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2 m4 push-m3">Ingredients</a>
     </div>
     <div class="col s12">
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='country')}}" class="waves-effect wavers-light btn btn_small col s4 push-s1 m4 push-m1">Country</a>
+        <a href="{{url_for('recipe_charts', user_id=user_id, category='allergens')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2 m4 push-m3">Allergens</a>
+    </div>
+    <div class="col s10 push-s1">
         <h5 class="welcome_header red_text">{{ category.capitalize() }} Amount Summary Graph:</h5>
         <p class="centered_paragraph red_text">
-            Retrieves the 5 most commonly found values of the {{ category }} category and shows their amount. Hover over each bar to reveal the value and its amount.
+            Retrieves up to 5 of the most commonly found {{ category }} and shows their individual amounts. Hover over each to reveal stats tag.
         </p>
     </div>
-    <div id="chart-here" class="bar_chart">
+    
+    <!--dc.js chart is appended to chart-here from JavaScript in script tag below-->
+    <div id="chart-here" class="bar_chart col s10 push-s1">
     </div>
-    <!-- #https://docs.mongodb.com/manual/tutorial/aggregation-with-user-preference-data/-->
     <div>
     {% for variable in summary%}
         {{ variable._id }}

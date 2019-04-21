@@ -3,14 +3,15 @@
 <ul id="nav-mobile" class="right hide-on-med-and-down">
     <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
-    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}" class="current_page">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
 </ul>
 <ul class="side-nav" id="mobile-demo">
+    <li><a href="{{ url_for('index') }}">Recipe-Connect<i class="fa fa-cutlery" aria-hidden="true"></i></a></li>
     <li><a href="{{url_for('search_recipes', user_id=user_id,  form_requested=False)}}">Find Recipe</a></li>
     <li><a href="{{url_for('recipe_charts', user_id=user_id, category='cuisine')}}">Recipe Charts</a></li>
-    <li><a href="{{url_for('user_recipes', user_id=user_id)}}">My Recipes</a></li>
+    <li><a href="{{url_for('user_recipes', user_id=user_id)}}" class="current_page">My Recipes</a></li>
     <li><a href="{{url_for('add_recipe', user_id=user_id)}}">Add Recipe</a></li>
     <li><a href="{{url_for('logout_user')}}">Log Out</a></li>
 </ul>
@@ -46,7 +47,6 @@
                             )</h6>
                             <h6>Upvotes: <em class="green_text">{{ recipe.recipe_upvotes }}</em> | Views: <em class="green_text">{{ recipe.recipe_views }}</em></h6>
                         </div>
-                        
                         <div class="col s12 m4">
                             <a href="{{url_for('edit_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="edit_recipe waves-effect wavers-light btn btn_small">Edit</a>
                             <a href="{{url_for('delete_recipe', user_id=user_id, recipe_id=recipe._id)}}" class="delete_recipe waves-effect wavers-light btn btn_small">Delete</a>
@@ -54,6 +54,11 @@
                     </div>
                 </div>
             <div class="collapsible-body">
+                {% if recipe.recipe_image|length > 0 %}
+                <div class="center-align col s12">
+                    <img src="{{ recipe.recipe_image }}" alt="" onerror="this.src='http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png'" class="circle_small">
+                </div>
+                {% endif %}
                 <span>
                     <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
                     {% if recipe.recipe_ingredients|length > 0 %}
