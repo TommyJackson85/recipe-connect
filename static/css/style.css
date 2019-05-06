@@ -1,4 +1,4 @@
-/*colors*/
+/*......................initial colors bases from color palette*/
 /*green base: 1CC71C*/
 /*blue base: 2E4272*/
 /* red base: AA3939*/
@@ -8,7 +8,29 @@
 /*bright blue base: 14B4B4*/
 /*seaweed green base 277064*/
 
-/* text and background colors and borders */
+/*.........................................................images*/
+/*home page image*/
+.home_page_image {
+    width: 200px;
+    height: 200px;
+    margin: 5px auto;
+    overflow: hidden;
+    border: solid;
+    border-color: #550000;
+    border-radius: 50%;
+}
+
+.home_page_image img {
+    width: 300px
+}
+/*small images from search/user recipes pages*/
+.circle_small {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+/*.....................................text and background colors and borders */
 body{
     background-color: #2E4172;
     color: white;
@@ -35,6 +57,7 @@ nav, .page-footer, .footer-copyright {
     color: #D46A6A;
 }
 
+/*Listing of recipes from search/user recipe pages*/
 .collapsible-header, .regular_box_item {
      background-color: #550000;
      color: #fff;
@@ -71,7 +94,6 @@ nav, .page-footer, .footer-copyright {
 }
 
 /*color schemes for form sections*/
-
 .ingredient_list_builder, .instruction_list_builder{
     background: #4F618E;
 }
@@ -82,7 +104,6 @@ nav, .page-footer, .footer-copyright {
     border-radius: 3px;
     background-color: #162855;
 }
-
 .ingredient_parent {
     background: #AAAA39;
     color: black;
@@ -93,8 +114,7 @@ nav, .page-footer, .footer-copyright {
     color: black;
     border-radius: 5px;
 }
-
-.instruction_editing_section{
+.ingredient_list_builder, .instruction_editing_section, .instruction_list_builder {
     border-radius: 5px;
 }
 
@@ -121,7 +141,7 @@ nav, .page-footer, .footer-copyright {
 }
 
 
-/*margins, paddings, other measurements*/
+/*.......................................margins, paddings, other measurements*/
 
 body {
     display: flex;
@@ -142,6 +162,10 @@ main {
     display: none !important;
 }
 
+.footer-copyright .container {
+    text-align: center;
+}
+
 .regular_box_item {
     display: flex;
     cursor: pointer;
@@ -157,40 +181,42 @@ main {
 .welcome_header, .centered_paragraph {
     text-align: center;
 }
+.welcome_header {
+    margin: 20px 0;
+}
+/*home page*/
+.home_page_message {
+    margin: 30px 0 0px 0;
+}
+
+/*User Recipes and Search Recipes*/
+.search_recipes {
+    margin: 10px 0 15px 0;
+}
+.collapsible-header .details {
+    width: 100%;   
+}
+.collapsible-header .details .details_1, .collapsible-header .details .details_2  {
+    width: 100%;   
+}
 
 /*User Recipes*/
 .edit_recipe, .delete_recipe {
-    margin: 10px 15px 5px 0px;
+    margin: 12px 15px 5px 0px;
 }
 
-/*Edit and Create forms*/
+/*Edit and Create form page*/
+
+.ingredient_list_builder {
+    margin: 15px 0 0 0;
+}
+
+.instruction_list_builder {
+    margin: 15px 0 15px 0;
+}
+
 .ingredient_add_button, .instruction_add_button, .save_instruction_edit {
-    margin: 5px 0px 20px 0px;
-}
-
-.circle_small {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-}
-
-.home_page_image {
-    width: 200px;
-    height: 200px;
-    margin: 5px auto;
-    overflow: hidden;
-    border: solid;
-    border-color: #550000;
-    border-radius: 50%;
-}
-
-#chart-here {
-    clear: left;
-}
-
-
-.home_page_image img {
-    width: 300px
+    margin: 5px 0 20px 0;
 }
 
 .ingredient-box, .instruction-box {
@@ -207,23 +233,10 @@ main {
     margin:5px 5px 5px 5px;
     padding: 5px 5px 5px 5px;
 }
+
 .ingredient_parent h6, .allergen_parent h6 {
     display:inline-block;
 }
-
-.category_select .btn.btn_small {
-    margin-bottom: 20px;
-}
-
- /*.bar-tooltip {
-    display:none;
-}
-
-.bar-tooltip:click {
-    display:block;
-    position:fixed;
-    overflow:hidden;
-}*/
 
 .instruction_editing_section{
     margin: 0px 5px 5px 5px;
@@ -231,31 +244,49 @@ main {
     overflow:auto;
 }
 
-.bar_chart {
-    width:90%;
-    height: 100%;
-    margin: 0px auto;
-    padding: 5px 5px 5px 5px;
+
+/*bar chart page*/
+.category_select .btn.btn_small {
+    margin-bottom: 20px;
 }
 
+.bar_chart {
+    width:90%;
+    height: auto;
+    margin: 0px auto;
+    padding: 5px 5px 5px 5px;
+    clear: left;
+}
+
+/*.......................................................... dc.js css changes*/
+svg:not(:root), symbol, image, marker, pattern, foreignObject {
+    overflow: visible;
+}
 .axis.x {
     z-index: -1 !important;
-    overflow: hidden;
+    overflow: visible;
 }
 .axis.x .tick text {
-    fill: red !important;
+    fill: white !important;
+    font: 15px sans-serif;
     transform: rotate(-45deg) !important;
     height: auto !important;
      z-index: 1 !important;
+}
+
+.axis.y .tick text {
+    fill: white !important;
 }
 .chart {
     pointer-events: none;
 }
 
 .dc-chart {
-    fill: red;
+    /*fill: white;*/
     stroke: none;
 }
+
+/*...............................media queries*/
 
 @media only screen and (min-width: 436px) {
     .brand-logo {
@@ -265,6 +296,10 @@ main {
 @media only screen and (min-width: 601px) {
     .brand-logo i {
         display: block !important;
+    }
+    .collapsible-header .details .details_1, .collapsible-header .details .details_2 {
+        float: left;
+        width: 50%;   
     }
 }
 

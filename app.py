@@ -5,6 +5,10 @@ import datetime
 import re
 import sys
 
+import urllib2
+from urllib2 import urlopen, urlparse
+import requests
+
 from flask import Flask, render_template, redirect, request, url_for, jsonify
 from datetime import timedelta
 from bson import json_util
@@ -20,7 +24,6 @@ app.config["MONGO_URI"] = 'mongodb://bigtom98:funnybone98@ds131997.mlab.com:3199
 # app.config["MONGO_URI"] = os.getenv('MONGO_URI', 'mongodb://localhost')
 
 mongo = PyMongo(app)
-
 
 # used to check if user is logged in and if it has foreign key of user id
 @app.route('/')
@@ -128,13 +131,28 @@ def login_user():
                                  "user_id": ObjectId(user_id)})
         return redirect(url_for('user_recipes',
                                 user_id=user_id))
-                        
+
+
+def sendRequest(url):
+    try:
+        page = requests.get(url)
+    
+    except Exception as e:
+        print("error:", e)
+        return False
+    
+    # check status code
+    if (page.status_code != 200):
+        return False                        
+    return page
+    
     
 @app.route('/user_recipes/<user_id>')
 def user_recipes(user_id):
     user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     recipe_ids = user['recipe_ids']
     # recipe ids are foreign keys linking the users created recipes
+    
     if(len(recipe_ids) == 0):
             return render_template("user_recipes.html",
                                    user_has_recipes=False,
@@ -148,10 +166,8 @@ def user_recipes(user_id):
             return render_template("user_recipes.html",
                                    user_has_recipes=True,
                                    user_id=user_id,
-                                   user=mongo.db.users.find_one(
-                                       {"_id": ObjectId(user_id)}
-                                   ),
-                                   recipes=recipes)
+                                   user=user,
+                                   recipes=list(recipes))
                                   
                             
 @app.route('/add_recipe/<user_id>')
@@ -175,6 +191,44 @@ def insert_recipe(user_id):
         recipe_allergen_summary = json.loads(
             new_data['recipe_allergen_summary']
         )
+        
+        #used if image url won't work
+        default_image = "http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png"
+        try:
+            #tests image first
+            test_image = new_data["recipe_image"]
+            if urlparse.urlparse(test_image).scheme:
+                #data urls are excluded
+                if urlparse.urlparse(test_image).scheme == 'data':
+                    recipe_image = default_image
+                else:
+                    #prevents 403 error
+                    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+                    url_request = urllib2.Request(test_image, headers = headers)
+                    
+                    test = urlopen(url_request)
+                    print(test.read())
+                    
+                    #gets url type
+                    url_type = test.info()['Content-type']
+                    if url_type.endswith("png") or url_type.endswith("jpeg") or url_type.endswith("gif"):
+                        recipe_image = new_data["recipe_image"]
+                    else:
+                        recipe_image = default_image
+            else:
+                if not test_image:
+                    #if user hasn't added to image field, no image will display from templates
+                    recipe_image = new_data["recipe_image"]
+                else:
+                    #if user created a faulty url, default image is used
+                    recipe_image = default_image
+        
+        except Exception as e:
+            #inform them that a general error has occurred
+            pass
+            recipe_image = default_image
+        
+        
         datetime_now = datetime.datetime.now()
         recipe_id = mongo.db.recipes.insert({       
                 "user_id": ObjectId(user_id),
@@ -185,7 +239,7 @@ def insert_recipe(user_id):
                 "recipe_name": new_data["recipe_name"],
                 "recipe_cuisine": new_data["recipe_cuisine"],
                 "recipe_description": new_data["recipe_description"],
-                "recipe_image": new_data["recipe_image"],
+                "recipe_image": recipe_image,
                 "recipe_ingredients": recipe_ingredients,
                 "recipe_allergen_summary": recipe_allergen_summary,
                 "recipe_instructions": recipe_instructions,
@@ -206,6 +260,8 @@ def edit_recipe(user_id, recipe_id):
     # turned to string for easier passing to JavaScript JSON
     ingredients = json.dumps(the_recipe["recipe_ingredients"])
     instructions = json.dumps(the_recipe["recipe_instructions"])
+    recipe_image = the_recipe["recipe_image"]
+    
     return render_template('edit_recipe.html', 
                            user_id=user_id,
                            user=mongo.db.users.find_one(
@@ -222,12 +278,51 @@ def edit_recipe(user_id, recipe_id):
 
 @app.route('/update_recipe/<user_id>/<recipe_id>', methods=['POST', 'GET'])
 def update_recipe(user_id, recipe_id):
+    
     edited_data = request.form.to_dict()
     recipe_instructions = json.loads(edited_data["recipe_instructions"])
     recipe_ingredients = json.loads(edited_data["recipe_ingredients"])
     recipe_allergen_summary = json.loads(
         edited_data["recipe_allergen_summary"]
     )
+    #used if image url won't work
+    default_image = "http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png"
+    try:
+        #tests image first
+        test_image = edited_data["recipe_image"]
+        print(urlparse.urlparse(test_image))
+        if urlparse.urlparse(test_image).scheme:
+            #data urls are excluded
+            if urlparse.urlparse(test_image).scheme == 'data':
+                recipe_image = default_image
+            else:
+                #prevents 403 error
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+                url_request = urllib2.Request(test_image, headers = headers)
+                
+                test = urlopen(url_request)
+                print(test.read())
+                
+                #gets url type
+                url_type = test.info()['Content-type']
+                if url_type.endswith("png") or url_type.endswith("jpeg") or url_type.endswith("gif"):
+                    recipe_image = edited_data["recipe_image"]
+                else:
+                    recipe_image = default_image
+        else:
+            if not test_image:
+                #if user hasn't added to image field, 
+                #no image will display from templates, 
+                #images are ignored with empty strings
+                recipe_image = edited_data["recipe_image"]
+            else:
+                #if user created a faulty url, default image is used
+                recipe_image = default_image
+    
+    except Exception as e:
+        #inform them that a general error has occurred
+        pass
+        recipe_image = default_image
     
     mongo.db.recipes.update({'_id': ObjectId(recipe_id)},
                             {"$set":
@@ -236,7 +331,7 @@ def update_recipe(user_id, recipe_id):
                                      edited_data["recipe_cuisine"],
                                  "recipe_description":
                                      edited_data["recipe_description"],
-                                 "recipe_image": edited_data["recipe_image"],
+                                 "recipe_image": recipe_image,
                                  "recipe_ingredients": recipe_ingredients,
                                  "recipe_allergen_summary":
                                      recipe_allergen_summary,
@@ -369,8 +464,6 @@ def recipe(recipe_id, user_id, upvoting):
 
 
 # used this mongodb manual for reference when 
-# designing my aggregation query for the recipe_charts page
-# https://docs.mongodb.com/manual/tutorial/aggregation-with-user-preference-data/
 @app.route('/recipe_charts/<user_id>/<category>', methods=['POST', 'GET'])                                
 def recipe_charts(user_id, category):
     query = []

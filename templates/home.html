@@ -43,13 +43,15 @@
             -->
         </div>
     </div>
-    {% if user_id == 'no_user' %}
+    <div class="center-align home_page_message col s12">
+        {% if user_id == 'no_user' %}
         <h5 class="center-align">Login or regigister here:</h5>
         <a href="{{url_for('login_register', new_register=False, login_exists=True, register_exists=False)}}"  class="login_register_link waves-effect wavers-light btn btn_large col s10 push-s1 m6 push-m3 l4 push-l4">Login/Register</a>
-    {% else %}
+        {% else %}
         <h5 class="center-align">Welcome <em class="green_text">{{ user_name }}</em>~revisit your recipe list:</h5>
         <a href="{{url_for('user_recipes', user_id=user_id)}}"  class="user_recipes_link waves-effect wavers-light btn btn_large col s10 push-s1 m6 push-m3 l4 push-l4">Your Recipes</a>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>
 {% endblock content %}
 

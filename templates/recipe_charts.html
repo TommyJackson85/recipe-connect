@@ -43,8 +43,8 @@
         <a href="{{url_for('recipe_charts', user_id=user_id, category='allergens')}}" class="waves-effect wavers-light btn btn_small col s5 push-s2 m4 push-m3">Allergens</a>
     </div>
     <div class="col s10 push-s1">
-        <h5 class="welcome_header red_text">{{ category.capitalize() }} Amount Summary Graph:</h5>
-        <p class="centered_paragraph red_text">
+        <h5 class="welcome_header">{{ category.capitalize() }} Amount Summary Graph:</h5>
+        <p class="centered_paragraph">
             Retrieves up to 5 of the most commonly found {{ category }} and shows their individual amounts. Hover over each to reveal stats tag.
         </p>
     </div>
@@ -64,30 +64,8 @@
 
 {% block scripts %}
     <script> 
-        //ingredients = JSON.parse({{ summary|tojson|safe }});
-      /*  var transactionsData = JSON.parse({{ summary|tojson|safe }});
-        console.log(transactionsData);
-        var ndx = crossfilter(transactionsData);
-        var id_dim = ndx.dimension(dc.pluck('_id'));
-        var amount_found = id_dim.group().reduceSum(dc.pluck('number'));
-        dc.barChart('#chart-here')
-            .height(300)
-            .ordinalColors(['green'])
-            .margins({top: 10, right: 50, bottom: 30, left: 50})
-            .dimension(id_dim)
-            .group(amount_found)
-            .transitionDuration(300)
-            .x(d3.scale.ordinal())
-            .xUnits(dc.units.ordinal)
-            .xAxisLabel("{{ category }}")
-            .yAxis().ticks(4);
-            /*.xAxis().transform(rotate(-45deg))*/
-    
-        /*dc.renderAll();*/
-        // Default width
         
         var transactionsData = JSON.parse({{ summary|tojson|safe }});
-        console.log(transactionsData);
         var ndx = crossfilter(transactionsData);
         var id_dim = ndx.dimension(dc.pluck('_id'));
         var amount_found = id_dim.group().reduceSum(dc.pluck('number'));

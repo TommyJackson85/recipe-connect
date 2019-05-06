@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <link rel="shortcut icon" href=""><!--for falvicon error-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
@@ -161,7 +162,6 @@
            instructionDeleted = false;//return false when called
             for(var i=0; i < instructions.length; i++){
                 $("#delete-instruction" + i ).on("click", function(d){
-                    console.log("delete_instruction is clicked!");
                     if (instructionDeleted == false && disableItemClicks == false) {
                         //allows click once
                         d = $(this).attr("value");
@@ -279,6 +279,8 @@
                     e.preventDefault();
                     return alert("Recipe Cuisine field empty! Cannot submit without it.");
                 }
+                
+                
                 //array unique code originally from this stackoverflow post: https://stackoverflow.com/questions/1584370/how-to-merge-two-arrays-in-javascript-and-de-duplicate-items
                 function arrayUnique(array) {
                     var a = array.concat();

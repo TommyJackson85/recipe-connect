@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block header %}
+    <!--materialise classes-->
     {% if user_id == 'no_user' %}
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{url_for('search_recipes', user_id='no_user', form_requested=False)}}" class="current_page">Find Recipe</a></li>
@@ -31,6 +32,7 @@
     {% endif %}
 {% endblock header %}
 {% block content %}
+<!--mix of regular CSS and materialise classes-->
 <div class="row">
     <form id="form" class="col s12 l10 push-l1" method="POST" action="{{ url_for('search_recipes', user_id=user_id, form_requested=True) }}">
         <h5 class="welcome_header col s12 l10 push-l1">Search recipes here!</h5>
@@ -53,10 +55,14 @@
         </div>
     </form>
 </div>
+    <!--regular CSS and materialise classes-->
+    {% if recipes_found %}
+        <h5 class="welcome_header col s12 l10 push-l1">Click each box to show summary!</h5>
+    {% endif %}
+    <!--materialise classes-->
 <div class="row">
-    <h5 class="welcome_header col s12 l10 push-l1">Click each recipe box to display summary!</h5>
     <div class="col s12 l10 push-l1 xl8 push-xl2">
-   {% if recipes_found %}
+    {% if recipes_found %}
         {% set new_recipes = [] %}
         {% set cuisine_types = [] %}
         {% set countries = [] %}
@@ -72,6 +78,7 @@
                 {% set new_recipes = new_recipes.append(1) %}
             {% endif %}
         {% endfor %}
+        <!--regular CSS classes-->
         <h6>No. New Recipes: <em class="green_text">{{ new_recipes|length }}</em> | No. Old Recipes: <em class="green_text">{{ recipes|length - new_recipes|length }}</em> | No. Countries: <em class="green_text">{{ countries|length }}</em> </h6> 
         <h6>Cuisines Found: 
             {% for ct in cuisine_types %}
@@ -81,48 +88,53 @@
         </h6>
     {% endif %}
     <!--https://stackoverflow.com/questions/42928348/print-count-before-and-after-jinja-loop-->
+    <!--materialise classes-->
     <ul class="collapsible" data-collapsible="accordion">
     {% if recipes_found %}
         {% for recipe in recipes %}
         <li>       
             <div class="collapsible-header">
                 <i class="material-icons">expand_more</i>
-                <div class="row">
-                    <div class="col s12 m8">
+                <!--regular CSS classes-->
+                <div class="details">
+                    <div class="details_1">
                         <h5>{{ recipe.recipe_name }}</h5>
                         {% if recipe.last_modified >= seven_days_before %}
                             <h5 class="red_text">New!</h5>
                         {% endif %}
-                        
-                        <h6>Cuisine: {{ recipe.recipe_cuisine }} - Last Updated: {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }} 
-                        (
-                        {% if recipe.last_modified.hour < 10 %}
-                            0{{ recipe.last_modified.hour }}
-                        {% else %}
-                            {{ recipe.last_modified.hour }}
-                        {% endif %}
-                        :
-                        {% if recipe.last_modified.minute < 10 %}
-                            0{{ recipe.last_modified.minute }}
-                        {% else %}
-                            {{ recipe.last_modified.minute }}
-                        {% endif %}
-                        )
+                        <h6>Cuisine: {{ recipe.recipe_cuisine }}</h6> 
+                        <h6>Last Updated: {{ recipe.last_modified.year }}/{{ recipe.last_modified.month }}/{{ recipe.last_modified.day }}
+                            (
+                            {% if recipe.last_modified.hour < 10 %}
+                                0{{ recipe.last_modified.hour }}
+                            {% else %}
+                                {{ recipe.last_modified.hour }}
+                            {% endif %}
+                            :
+                            {% if recipe.last_modified.minute < 10 %}
+                                0{{ recipe.last_modified.minute }}
+                            {% else %}
+                                {{ recipe.last_modified.minute }}
+                            {% endif %}
+                            )
                         </h6>
                         <h6>Upvotes: <em class="green_text">{{ recipe.recipe_upvotes }}</em> | Views: <em class="green_text">{{ recipe.recipe_views }}</em></h6>
                     </div>
-                    <div class="col s12 m4">
+                    <div class="details_2">
                         <h6><strong>Created by: </strong> <em class="green_text">{{recipe.user_details.name}}</em>
                         </h6><h6><strong>From: </strong><em class="green_text">{{recipe.user_details.country}}</em></h6>
-                        <a href="{{ url_for('recipe', recipe_id=recipe._id, user_id=user_id, upvoting=False ) }}" class="view_recipe waves-effect wavers-light btn btn_medium">View Recipe</a>
+                        <a href="{{ url_for('recipe', recipe_id=recipe._id, user_id=user_id, upvoting=False ) }}" class="view_recipe waves-effect wavers-light btn btn_medium">View Full Recipe</a>
                     </div>
                 </div>
             </div>
+            <!--materialise classes-->
             <div class="collapsible-body">
+                <h5>Recipe Summary:</h5>
                 {% if recipe.recipe_image|length > 0 %}
-                <div class="center-align col s12">
+                <div class="left-align col s12">
                     <img src="{{ recipe.recipe_image }}" alt="" onerror="this.src='http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png'" class="circle_small">
                 </div>
+                <!--regular CSS classes-->
                 {% endif %}             
                 <p><strong>Description:</strong> {{ recipe.recipe_description }}</p>
                 {% if recipe.recipe_ingredients|length > 0 %}
@@ -150,6 +162,7 @@
         {% endfor %}
     {% else %}
     <li>
+        <!--regular CSS classes-->
         <div class='regular_box_item'>
             <div class="recipe_header">
                 <h6>No recipes found! Please try another search above!</h6>
