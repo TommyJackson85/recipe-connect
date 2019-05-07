@@ -4,11 +4,9 @@ import ast
 import datetime
 import re
 import sys
+import urllib.request
 
-import urllib2
-from urllib2 import urlopen, urlparse
-import requests
-
+from werkzeug.urls import url_parse
 from flask import Flask, render_template, redirect, request, url_for, jsonify
 from datetime import timedelta
 from bson import json_util
@@ -132,19 +130,6 @@ def login_user():
         return redirect(url_for('user_recipes',
                                 user_id=user_id))
 
-
-def sendRequest(url):
-    try:
-        page = requests.get(url)
-    
-    except Exception as e:
-        print("error:", e)
-        return False
-    
-    # check status code
-    if (page.status_code != 200):
-        return False                        
-    return page
     
     
 @app.route('/user_recipes/<user_id>')
@@ -197,17 +182,15 @@ def insert_recipe(user_id):
         try:
             #tests image first
             test_image = new_data["recipe_image"]
-            if urlparse.urlparse(test_image).scheme:
+            if url_parse(test_image).scheme:
                 #data urls are excluded
-                if urlparse.urlparse(test_image).scheme == 'data':
+                if url_parse(test_image).scheme == 'data':
                     recipe_image = default_image
                 else:
                     #prevents 403 error
                     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
-                    url_request = urllib2.Request(test_image, headers = headers)
-                    
-                    test = urlopen(url_request)
-                    print(test.read())
+                    url_request = urllib.request.Request(test_image, headers = headers)
+                    test = urllib.request.urlopen(url_request)
                     
                     #gets url type
                     url_type = test.info()['Content-type']
@@ -216,8 +199,11 @@ def insert_recipe(user_id):
                     else:
                         recipe_image = default_image
             else:
+                print("not url")
                 if not test_image:
-                    #if user hasn't added to image field, no image will display from templates
+                    #if user hasn't added to image field, 
+                    #no image will display from templates, 
+                    #images are ignored with empty strings
                     recipe_image = new_data["recipe_image"]
                 else:
                     #if user created a faulty url, default image is used
@@ -227,7 +213,6 @@ def insert_recipe(user_id):
             #inform them that a general error has occurred
             pass
             recipe_image = default_image
-        
         
         datetime_now = datetime.datetime.now()
         recipe_id = mongo.db.recipes.insert({       
@@ -285,23 +270,21 @@ def update_recipe(user_id, recipe_id):
     recipe_allergen_summary = json.loads(
         edited_data["recipe_allergen_summary"]
     )
+    
     #used if image url won't work
     default_image = "http://www.inimco.com/wp-content/themes/consultix/images/no-image-found-360x260.png"
     try:
         #tests image first
         test_image = edited_data["recipe_image"]
-        print(urlparse.urlparse(test_image))
-        if urlparse.urlparse(test_image).scheme:
+        if url_parse(test_image).scheme:
             #data urls are excluded
-            if urlparse.urlparse(test_image).scheme == 'data':
+            if url_parse(test_image).scheme == 'data':
                 recipe_image = default_image
             else:
                 #prevents 403 error
                 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
-                url_request = urllib2.Request(test_image, headers = headers)
-                
-                test = urlopen(url_request)
-                print(test.read())
+                url_request = urllib.request.Request(test_image, headers = headers)
+                test = urllib.request.urlopen(url_request)
                 
                 #gets url type
                 url_type = test.info()['Content-type']
