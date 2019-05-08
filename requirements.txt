@@ -17,7 +17,6 @@ pyrsistent==0.15.1
 python-dateutil==2.8.0
 requests==2.2.1
 six==1.12.0
-unattended-upgrades==0.1
 urllib3==1.7.1
 validator-collection==1.3.4
 Werkzeug==0.14.1
