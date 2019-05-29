@@ -46,7 +46,7 @@ As a user I want to be able to ..
 
 Wireframes for design and Data-schema for mongodb:
 - [Wireframe 1](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe1.jpeg)
-- [Wireframe 2](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe2.jped)
+- [Wireframe 2](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe2.jpeg)
 - [Wireframe 3](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe3.jpeg)
 - [Wireframe 4](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe4.jpeg)
 - [Wireframe 5](https://raw.githubusercontent.com/TommyJackson85/recipe-connect/master/static/images/wireframe5.jpeg)
