@@ -93,9 +93,10 @@ This section is also where you would share links to any wireframes, mockups, dia
 - I will try to fix the individual SSL handshake failure Error, and any other occuring individual errors with images, to see if I can allow them to be used.
 - I may not put repeat code in global functions (and call them where needed) if it feels unclean or if it causes errors.
 - For my app route calls on app.py, I use both Post and Get methods. For most cases I don't need both, and maybe sometimes none. I will remove which ever I don't need.
-- On my GitHub, I had to make multiple small commits to testing a bug in hosting on Heroku and when changing deployment from Heroku to GitHub. I plan on cleaning my git commit history, removing and merging commits.
+- On my GitHub, I had to make multiple small commits testing bugs in from heroku hosting and when changing deployment from Heroku to GitHub. I plan on cleaning my git commit history, removing and merging commits.
 - From the edit recipe function, I call individual parts of an object (the_recipe) for editing when rendering the template. I may just need to pass the object when rendering the template and access them from the template.
 - Rounding corners of accordian box listings, created design issues. May use more complex code for border radius here.
+- I need to fix my requirments file, because of some modules might not be need and three bug warnings on GitHub are occuring due to Jinja2, urllib3 and requests modules. I had to recompile requirements to solve a heroku bug on one of my most recent commits. Due to time restraints I can't fix it now.
 
 ## Technologies Used
 - Python 3 was used to build much of the functionality when transitioning between the backend and front end
@@ -159,7 +160,9 @@ When a user...
     - I had frequent bugs when deleting and editing instructions, to do with accessing the buttons again after changes. I fixed them by just reloading the array data to the dom and reaccessing the built lists. This is not ideal in terms of performance (Especially when dealing with mass data. I will rework this in the future if performance becomes a stronger requirement.
     - When deleting instruction items, I had a common problem in that more items would be deleted after each one. I reworked the for loop to only delete one.
 - Heroku
-    - I had to restart my heroku application due not loading my page. This was due to mistakes in commits.
+    - I had to restart my heroku app twice due not loading my page. 
+        - First because I made mistakes in commits.
+        - Becuase I forgot to add my PORT and IP variables to Heroku.
 
     
 ## User Story testing
