@@ -5,6 +5,9 @@ The user can build and edit long ingredient and instruction lists at ease withou
 A user can search recipes by cuisine, ingredient and allergen exclusion, in which will return the most popular, most viewed and most recent items first. 
 With a special drop down box system, a user can view recipe summaries of each found result before going to a separate page to view it in full, making it easier to find what they want.
 A user can also view bar charts under categories allergens, ingredients, cuisine and country of origin.
+
+The website is hosted on Heroku [here](http://recipe-connect.herokuapp.com/).
+The websites code can be found on this [Github Repository](https://github.com/TommyJackson85/recipe-connect)
  
 ## UX
 
@@ -120,6 +123,11 @@ This section is also where you would share links to any wireframes, mockups, dia
 - Code Institute Data Centric development's miniproject tutorial by Brian O Grady, was used as a basis for starting the poject, particularly with it's create/edit forms and materialise's accordian template as they were very valuable for my project.
 
 ## Testing for Code/Tech Quality and Bugs
+
+### testing on different browsers and their consoles, and on different devices.
+- Tested on Safari, Firefox and Chrome and the website works as it should on both.
+- No errors appear in the consoles on each browser.
+- The website works perfectly on both mobile and larger devices.
 
 ### code validation testing
 - Tested and fixed most of the Python code to fit majority of the PEP8 requirements with [pep8online](http://pep8online.com/)
