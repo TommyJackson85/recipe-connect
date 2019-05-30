@@ -99,7 +99,9 @@ This section is also where you would share links to any wireframes, mockups, dia
 - On my GitHub, I had to make multiple small commits testing bugs in from heroku hosting and when changing deployment from Heroku to GitHub. I plan on cleaning my git commit history, removing and merging commits.
 - From the edit recipe function, I call individual parts of an object (the_recipe) for editing when rendering the template. I may just need to pass the object when rendering the template and access them from the template.
 - Rounding corners of accordian box listings, created design issues. May use more complex code for border radius here.
-- I need to fix my requirments file, because of some modules might not be need and three bug warnings on GitHub are occuring due to Jinja2, urllib3 and requests modules. I had to recompile requirements to solve a heroku bug on one of my most recent commits. Due to time restraints I can't fix it now.
+- Will need to make sure no more severity warning come up on github as packages can become out dated.
+- Project contains c9 invoke files. I am not sure if it is safe to delete them. Will find out.
+
 
 ## Technologies Used
 - Python 3 was used to build much of the functionality when transitioning between the backend and front end
@@ -171,6 +173,8 @@ When a user...
     - I had to restart my heroku app twice due not loading my page. 
         - First because I made mistakes in commits.
         - Becuase I forgot to add my PORT and IP variables to Heroku.
+- Mlab
+    - On previous commits, I left my MongoDB URI open on the app file with the username and password accesable from other users. Due to security issues, I deleted this user data on mLab and created a new user object. I stored this user date in Heroku config variables.
 
     
 ## User Story testing
